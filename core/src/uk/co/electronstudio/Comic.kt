@@ -17,6 +17,11 @@ abstract class Comic(val filename: String) {
 
     fun continueLoading() {
         pages.forEach{page->
+            if(page.previewTexture ==null){
+                page.loadPreviewTexture()
+                Gdx.graphics.isContinuousRendering = true
+                Gdx.graphics.requestRendering()
+            }
             if(loaded<10){
                 if(page.texture==null){
                     page.loadTexture()
@@ -36,15 +41,16 @@ abstract class Comic(val filename: String) {
 
 
         pages.forEach{page:Page ->
-            page.texture?.let {
+            val t = page.texture ?: page.previewTexture
+            t?.let {
                 it.texture?.setFilter(filter, filter)
-                batch.draw(it, x, y)
-                x += it.regionWidth
+                batch.draw(it, x, y, page.pixmap.width.toFloat(), page.pixmap.height.toFloat())
+                x += page.pixmap.width
                 col++
                 if (col == cols) {
                     col = 0
                     x = 0f
-                    y += it.regionHeight
+                    y += page.pixmap.height
                 }
             }
         }
