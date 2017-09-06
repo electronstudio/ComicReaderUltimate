@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import kotlin.concurrent.thread
 
-class ViewScreen: ScreenAdapter(), InputProcessor {
+class ViewScreen(val app: App): ScreenAdapter(), InputProcessor {
 
 
     private var batch: SpriteBatch = SpriteBatch()
@@ -46,7 +46,7 @@ class ViewScreen: ScreenAdapter(), InputProcessor {
 
         thread(start = true) {
             println("starting")
-            comic.loadPages()
+            comic.loadPixmaps()
             println("loaded")
         }
 
@@ -67,7 +67,7 @@ class ViewScreen: ScreenAdapter(), InputProcessor {
 
     override fun render(delta: Float) {
         Gdx.graphics.isContinuousRendering = false
-        comic.continueLoading()
+        comic.loadUnloadedTexturesFromPixmaps()
         processKeyEvents()
         processMouseEvents()
         draw()

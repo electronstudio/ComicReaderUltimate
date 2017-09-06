@@ -13,10 +13,10 @@ abstract class Comic(val filename: String) {
      val imageRegex = ".*(jpg|png|bmp|jpeg)".toRegex(RegexOption.IGNORE_CASE)
 
 
-    abstract fun loadPages()
+    abstract fun loadPixmaps()
     private var loaded=0
 
-    fun continueLoading() {
+    fun loadUnloadedTexturesFromPixmaps() {
         pages.forEach{page->
             if(page.previewTexture ==null){
                 page.loadPreviewTexture()

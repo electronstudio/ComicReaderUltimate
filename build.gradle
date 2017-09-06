@@ -56,6 +56,8 @@ project(":core") {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         compile "commons-logging:commons-logging:1.2"
         compile "org.apache.tika:tika-core:1.12"
+        compile "io.github.libktx:ktx-scene2d:1.9.6-b7"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4"
     }
 }
 

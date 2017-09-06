@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 class RarComic(filename: String): Comic(filename) {
-    override fun loadPages(){
+    override fun loadPixmaps(){
         println("rar")
         val rarFile = Archive(FileVolumeManager(File(filename)))
         rarFile.use {

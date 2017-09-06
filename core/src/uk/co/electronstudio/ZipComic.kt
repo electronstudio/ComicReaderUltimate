@@ -6,7 +6,7 @@ import java.util.zip.ZipFile
 
 class ZipComic(filename: String):Comic(filename) {
 
-    override fun loadPages() {
+    override fun loadPixmaps() {
 
 
 

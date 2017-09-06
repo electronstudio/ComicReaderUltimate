@@ -36,6 +36,8 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.1.1" level="project" />
     <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.tika:tika-core:1.12" level="project" />
+    <orderEntry type="library" name="Gradle: io.github.libktx:ktx-scene2d:1.9.6-b7" level="project" />
+    <orderEntry type="library" name="Gradle: net.dermetfan.libgdx-utils:libgdx-utils:0.13.4" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
   </component>
 </module>

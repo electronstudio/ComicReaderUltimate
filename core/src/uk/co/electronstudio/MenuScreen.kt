@@ -1,33 +1,182 @@
 package uk.co.electronstudio
 
-import com.badlogic.gdx.Screen
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Array
+import ktx.scene2d.*
+import net.dermetfan.gdx.scenes.scene2d.ui.FileChooser
+import net.dermetfan.gdx.scenes.scene2d.ui.ListFileChooser
+import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
+import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 
-class MenuScreen: Screen {
-    override fun hide() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun show() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun render(delta: Float) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+class MenuScreen(val app: App): ScreenAdapter() {
+    private var stage: Stage? = null
+    private var table: Table? = null
 
-    override fun pause() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    init {
+        stage = Stage()
+        Gdx.input.inputProcessor = stage
 
-    override fun resume() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val s = Skin(Gdx.files.internal("skin/uiskin.json"))
+
+        val nameLabel = Label("Name:", s)
+
+        Scene2DSkin.defaultSkin = s
+
+        val chooser = ListFileChooser(s,"default",  object: FileChooser.Listener{
+            override fun choose(file: FileHandle?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun choose(files: Array<FileHandle>?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun cancel() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
+
+        table = table {
+            button { cell ->
+                // Changing button properties - button is "this":
+                color = Color.CORAL
+                // Changing cell properties:
+                cell.fillX().row()
+            }
+            table {
+                // Changing nested table properties:
+                defaults().pad(2f)
+                // Adding table children:
+                label("Nested")
+                label("table")
+                label("of")
+                label("labels.")
+                // Cell of the nested actor is also available through "it":
+                it.spaceBottom(10f).row()
+            }
+            textButton(text = "Click me!")
+            // Packing the root window:
+           // pack()
+        }
+
+        val window = window(title = "Settings") {
+//            button { cell ->
+//                // Changing button properties - button is "this":
+//                color = Color.CORAL
+//                // Changing cell properties:
+//                cell.fillX().row()
+//            }
+//            table {
+//                // Changing nested table properties:
+//                defaults().pad(2f)
+//                // Adding table children:
+//                label("Nested")
+//                label("table")
+//                label("of")
+//                label("labels.")
+//                // Cell of the nested actor is also available through "it":
+//                it.spaceBottom(10f).row()
+//            }
+            textButton(text = "LOAD (L)")
+            textButton(text = "QUIT (Q)")
+            row()
+            label("Mouse scrollwheel sensitivity")
+            slider(min=10f, max=100f, step=10f)
+            row()
+            label("Mouse movement sensitivity")
+            slider(min=10f, max=100f, step=10f)
+            row()
+            label("Number of columns")
+            slider(min=1f, max=10f, step=1f)
+            row()
+            label("Keyboard scroll speed")
+            slider(min=10f, max=100f, step=10f)
+            row()
+            label("Zoom speed")
+            slider(min=10f, max=100f, step=10f)
+            row()
+
+
+            // Packing the root window:
+            pack()
+        }
+
+
+        val window2 = window(title = "Settings") {
+            chooser
+            pack()
+        }
+
+      //  window2.add(chooser)
+      //  window2.pack()
+
+        //chooser.setFillParent(true)
+       window2.setFillParent(true)
+        table!!.setFillParent(true)
+        stage!!.addActor(window2)
+
+        //table!!.setDebug(true) // This is optional, but enables debug lines for tables.
+
+        // Add widgets to the table here.
     }
 
     override fun resize(width: Int, height: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        stage?.getViewport()?.update(width, height, true)
+    }
+
+    override fun render(delta: Float) {
+        Gdx.gl.glClearColor(0f,0f,0f,255f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        stage?.act(Gdx.graphics.deltaTime)
+        stage?.draw()
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)){
+            n()
+        }
+
+    }
+
+    private fun n() {
+        val conf = NativeFileChooserConfiguration()
+
+// Starting from user's dir
+        conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
+
+// Filter out all files which do not have the .ogg extension and are not of an audio MIME type - belt and braces
+ //       conf.mimeFilter = "audio/*"
+ //       conf.nameFilter = FilenameFilter { dir, name -> name.endsWith("ogg") }
+
+// Add a nice title
+        conf.title = "Choose audio file"
+
+
+
+        app.fileChooser.chooseFile(conf, object : NativeFileChooserCallback {
+            override fun onFileChosen(file: FileHandle) {
+                // Do stuff with file, yay!
+            }
+
+            override fun onCancellation() {
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+            }
+
+            override fun onError(exception: Exception) {
+                // Handle error (hint: use exception type)
+            }
+        })
     }
 
     override fun dispose() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        stage!!.dispose()
     }
 }
