@@ -5,9 +5,10 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import org.apache.tika.Tika
 import java.io.File
+import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class Comic(val filename: String) {
-     val pages = ArrayList<Page>(100)
+     val pages = CopyOnWriteArrayList<Page>()
      private var filter = Texture.TextureFilter.Linear
      val imageRegex = ".*(jpg|png|bmp|jpeg)".toRegex(RegexOption.IGNORE_CASE)
 
