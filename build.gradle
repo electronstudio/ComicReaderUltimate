@@ -12,6 +12,7 @@ buildscript {
         classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
         classpath group: 'org.mini2Dx', name: 'butler', version: '1.1.2'
     }
+
 }
 
 allprojects {
@@ -28,6 +29,8 @@ allprojects {
         aiVersion = '1.8.0'
     }
 
+
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -38,7 +41,11 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "kotlin"
-
+    compileJava {
+        options.fork = true
+        options.forkOptions.executable = 'javac'
+        options.compilerArgs << "-XDignore.symbol.file=true"
+    }
 
     dependencies {
         compile project(":core")
@@ -46,6 +53,8 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
+
+
 }
 
 project(":core") {

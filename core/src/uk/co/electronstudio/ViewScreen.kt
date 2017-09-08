@@ -4,13 +4,16 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
+import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
 
-class ViewScreen(val app: App): ScreenAdapter(), InputProcessor {
+class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProcessor {
 
 
     private var batch: SpriteBatch = SpriteBatch()
@@ -30,7 +33,7 @@ class ViewScreen(val app: App): ScreenAdapter(), InputProcessor {
 
 
     //var comic = Comic("/Volumes/Home/rich/test.cbz")
-    private var comic = Comic.factory("/Volumes/Home/rich/test.cbz")
+    private var comic:Comic? = null
 
 
     private val cols = 1
@@ -44,11 +47,7 @@ class ViewScreen(val app: App): ScreenAdapter(), InputProcessor {
 
     init {
 
-        thread(start = true) {
-            println("starting")
-            comic.loadPixmaps()
-            println("loaded")
-        }
+
 
 
 
@@ -62,12 +61,60 @@ class ViewScreen(val app: App): ScreenAdapter(), InputProcessor {
 
         realCam.update()
         goalCam.update()
+
+
+        //if passed comic, attempt to load it
+        //else attempt to load previous comic
+
+        if(fileToLoad!=null){
+            loadComic(fileToLoad)
+        }
+
+        //if fail...
+      //  requestFile()
+    }
+
+    private fun requestFile() {
+        val conf = NativeFileChooserConfiguration()
+
+      //  conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
+
+        conf.title = "Choose cbr/cbz"
+
+
+        app.fileChooser.chooseFile(conf, object : NativeFileChooserCallback {
+            override fun onFileChosen(file: FileHandle) {
+                loadComic(file.path())
+            }
+
+            override fun onCancellation() {
+
+            }
+
+            override fun onError(exception: Exception) {
+                throw exception
+            }
+        })
     }
 
 
+    fun loadComic(filename:String){
+        println("loadcomic $filename")
+
+        val c=Comic.factory(filename)
+
+        thread(start = true) {
+            println("starting")
+            c.loadPixmaps()
+            println("loaded")
+        }
+
+        comic = c
+    }
+
     override fun render(delta: Float) {
         Gdx.graphics.isContinuousRendering = false
-        comic.loadUnloadedTexturesFromPixmaps()
+        comic?.loadUnloadedTexturesFromPixmaps()
         processKeyEvents()
         processMouseEvents()
         draw()
@@ -81,7 +128,7 @@ class ViewScreen(val app: App): ScreenAdapter(), InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         batch.begin()
-        comic.render(batch, cols)
+        comic?.render(batch, cols)
         batch.end()
     }
 
@@ -156,8 +203,9 @@ class ViewScreen(val app: App): ScreenAdapter(), InputProcessor {
 
     override fun keyUp(keycode: Int): Boolean {
         when (keycode) {
+            Input.Keys.O -> requestFile()
             Input.Keys.SPACE -> goalCam.translate(0f, 1000f)
-            Input.Keys.B -> comic.swapFilter()
+            Input.Keys.B -> comic?.swapFilter()
             Input.Keys.DOWN -> scrollDown = false
             Input.Keys.UP -> scrollUp = false
             Input.Keys.LEFT -> scrollLeft = false

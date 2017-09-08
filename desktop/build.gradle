@@ -64,5 +64,34 @@ jfx {
     bundleArguments = [
             systemWide: true
     ]
+
+    fileAssociations = [
+//            [
+//                    description: 'cbz',
+//                    extensions: 'cbz',
+//                    contentType: 'application/vnd.comicbook+zip'
+//            ]
+            //,
+            [
+                    description: 'cbz2',
+//                    extensions: 'cbz',
+                    contentType: 'application/zip'
+            ],
+//            [
+//                    description: 'cbr',
+//                    extensions: 'cbr',
+//                    contentType: 'application/x-cbr'
+//            ],
+//            [
+//                    description: 'cbr2',
+//                    extensions: 'cbr',
+//                    contentType: 'application/vnd.rar'
+//            ],
+//            [
+//                    description: 'cbr3',
+//                    extensions: 'cbr',
+//                    contentType: 'application/x-rar-compressed'
+//            ]
+    ]
 }
 

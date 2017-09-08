@@ -73,8 +73,8 @@ abstract class Comic(val filename: String) {
             val mimeType = tika.detect(File(filename));
             println("mimetype: $mimeType")
             return when(mimeType){
-                "application/x-rar-compressed" -> RarComic(filename)
-                "application/zip" -> ZipComic(filename)
+                "application/x-rar-compressed", "application/vnd.rar", "application/x-cbr" -> RarComic(filename)
+                "application/zip", "application/vnd.comicbook+zip" -> ZipComic(filename)
                 else -> throw Exception("unknown file type $mimeType")
             }
 

@@ -104,10 +104,12 @@ public class DesktopFileChooser implements NativeFileChooser {
 			fileDialog.setDirectory(configuration.directory.file().getAbsolutePath());
 
 		// Present it to the world
-		
-		Gdx.graphics.setWindowedMode(100, 100);
+
+		Gdx.input.setCursorCatched(false);
+		Gdx.graphics.setWindowedMode(10, 10);
 		fileDialog.setVisible(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+		Gdx.input.setCursorCatched(true);
 
 		File[] files = fileDialog.getFiles();
 
