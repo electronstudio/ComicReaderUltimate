@@ -36,20 +36,33 @@ task dist(type: Jar) {
 
 dist.dependsOn classes
 
-eclipse {
-    project {
-        name = appName + "-desktop"
-        linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/core/assets'
-    }
+apply plugin: 'javafx-gradle-plugin'
+
+
+jfx {
+    // minimal requirement for jfxJar-task
+    mainClass = 'uk.co.electronstudio.desktop.DesktopLauncher'
+    appName = "CRU"
+    verbose = true
+
+    addPackagerJar = false
+    nativeReleaseVersion = "$version"
+    // minimal requirement for jfxNative-task
+    vendor = 'ElectronStudio'
+
+    manifestAttributes = ['Implementation-Version': version]
+
+    //  alternativePathToJarFile = 'build/libs/desktop-0.0.1.jar'
+    //    bundler='windows.app'
+    bundler='mac.app'
+    //bundler='mac.app'
+
+    copyAdditionalAppResourcesToJar = true
+    //  additionalBundlerResources = '../android/assets/'
+    additionalAppResources = '../core/assets/'
+
+    bundleArguments = [
+            systemWide: true
+    ]
 }
 
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
-}
