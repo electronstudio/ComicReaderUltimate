@@ -9,11 +9,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Matrix4
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
 
-class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProcessor {
+class ViewScreen2(val app: App, fileToLoad: String?): ScreenAdapter(), InputProcessor {
 
 
     private var batch: SpriteBatch = SpriteBatch()
@@ -28,12 +29,12 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
     private var zoomIn = false
     private var zoomOut = false
 
-    private var realCam: OrthographicCamera = OrthographicCamera()
-    private var goalCam: OrthographicCamera = OrthographicCamera()
+    private var cam: OrthographicCamera = OrthographicCamera()
+
 
 
     //var comic = Comic("/Volumes/Home/rich/test.cbz")
-    private var comic:Comic? = null
+    private var comic: Comic? = null
 
 
     private val cols = 1
@@ -44,6 +45,10 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
 
     private val scrollSpeed = 20f
 
+    var x=0f
+    var y=0f
+    var zoom=1f
+
 
     init {
 
@@ -51,16 +56,16 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
 
 
 
-        realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        cam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+      //  cam.translate(Gdx.graphics.width.toFloat()/2, Gdx.graphics.height.toFloat()/2)
 
         //    Gdx.graphics.isContinuousRendering = false;
         //   Gdx.graphics.requestRendering();
 
         Gdx.input.inputProcessor = this
 
-        realCam.update()
-        goalCam.update()
+        cam.update()
+
 
 
         //if passed comic, attempt to load it
@@ -101,7 +106,7 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
     fun loadComic(filename:String){
         println("loadcomic $filename")
 
-        val c=Comic.factory(filename)
+        val c= Comic.factory(filename)
 
         thread(start = true) {
             println("starting")
@@ -121,9 +126,15 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
     }
 
     private fun draw() {
-        goalCam.update()
-        realCam.update()
-        batch.projectionMatrix = realCam.combined
+        cam.update()
+        batch.projectionMatrix = cam.combined
+
+        batch.transformMatrix= Matrix4().
+              //  translate(-x,-y,0f).
+                translate(Gdx.graphics.width/2f, Gdx.graphics.height/2f,0f).
+                scale(zoom,zoom,1f).
+                translate(-Gdx.graphics.width/2f, -Gdx.graphics.height/2f,0f).
+                translate(-x,-y,0f)
         Gdx.gl.glClearColor(background.r, background.g, background.b, background.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
@@ -137,58 +148,59 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
             Gdx.graphics.isContinuousRendering = true
         }
 
-        val xd: Float = if (scrollLeft) -scrollSpeed*realCam.zoom else if (scrollRight) scrollSpeed*realCam.zoom  else 0f
-        val yd: Float = if (scrollUp) -scrollSpeed*realCam.zoom  else if (scrollDown) scrollSpeed*realCam.zoom  else 0f
+        val xd: Float = if (scrollLeft) -scrollSpeed else if (scrollRight) scrollSpeed else 0f
+        val yd: Float = if (scrollUp) -scrollSpeed else if (scrollDown) scrollSpeed else 0f
         val zd: Float = if (zoomIn) 1 - zoomSpeed else if (zoomOut) 1 + zoomSpeed else 1f
 
-        realCam.translate(xd, yd)
-        goalCam.translate(xd, yd)
+        zoom*=zd
+        x+=xd
+        y+=yd
 
-        realCam.zoom = realCam.zoom * zd
-        goalCam.zoom = goalCam.zoom * zd
+
+
     }
 
 
     private fun updateCameras() {
 
-        println(goalCam.position.x)
-//        if(comic!!.pages[0].texture!!.regionWidth>Gdx.graphics.width) {
+//        println(goalCam.position.x)
+//        if(comic!!.pages[0].texture!!.regionWidth> Gdx.graphics.width) {
 //            if (goalCam.position.x < goalCam.zoom * Gdx.graphics.width / 2f) {
 //                goalCam.position.x = goalCam.zoom * Gdx.graphics.width / 2f
 //                realCam.position.x = goalCam.zoom * Gdx.graphics.width / 2f
 //            }
 //        }
-
-
-        if (goalCam.zoom < realCam.zoom) {
-            realCam.zoom *= (1 - zoomSpeed)
-            if (goalCam.zoom > realCam.zoom) realCam.zoom = goalCam.zoom
-            Gdx.graphics.isContinuousRendering = true
-        } else if (goalCam.zoom > realCam.zoom) {
-            realCam.zoom *= (1 + zoomSpeed)
-            if (goalCam.zoom < realCam.zoom) realCam.zoom = goalCam.zoom
-            Gdx.graphics.isContinuousRendering = true
-        }
-
-        if (goalCam.position.y < realCam.position.y) {
-            realCam.position.y -= scrollSpeed
-            if (goalCam.position.y > realCam.position.y) realCam.position.y = goalCam.position.y
-            Gdx.graphics.isContinuousRendering = true
-        } else if (goalCam.position.y > realCam.position.y) {
-            realCam.position.y += scrollSpeed
-            if (goalCam.position.y < realCam.position.y) realCam.position.y = goalCam.position.y
-            Gdx.graphics.isContinuousRendering = true
-        }
-
-        if (goalCam.position.x < realCam.position.x) {
-            realCam.position.x -= scrollSpeed
-            if (goalCam.position.x > realCam.position.x) realCam.position.x = goalCam.position.x
-            Gdx.graphics.isContinuousRendering = true
-        } else if (goalCam.position.x > realCam.position.x) {
-            realCam.position.x += scrollSpeed
-            if (goalCam.position.x < realCam.position.x) realCam.position.x = goalCam.position.x
-            Gdx.graphics.isContinuousRendering = true
-        }
+//
+//
+//        if (goalCam.zoom < realCam.zoom) {
+//            realCam.zoom *= (1 - zoomSpeed)
+//            if (goalCam.zoom > realCam.zoom) realCam.zoom = goalCam.zoom
+//            Gdx.graphics.isContinuousRendering = true
+//        } else if (goalCam.zoom > realCam.zoom) {
+//            realCam.zoom *= (1 + zoomSpeed)
+//            if (goalCam.zoom < realCam.zoom) realCam.zoom = goalCam.zoom
+//            Gdx.graphics.isContinuousRendering = true
+//        }
+//
+//        if (goalCam.position.y < realCam.position.y) {
+//            realCam.position.y -= scrollSpeed
+//            if (goalCam.position.y > realCam.position.y) realCam.position.y = goalCam.position.y
+//            Gdx.graphics.isContinuousRendering = true
+//        } else if (goalCam.position.y > realCam.position.y) {
+//            realCam.position.y += scrollSpeed
+//            if (goalCam.position.y < realCam.position.y) realCam.position.y = goalCam.position.y
+//            Gdx.graphics.isContinuousRendering = true
+//        }
+//
+//        if (goalCam.position.x < realCam.position.x) {
+//            realCam.position.x -= scrollSpeed
+//            if (goalCam.position.x > realCam.position.x) realCam.position.x = goalCam.position.x
+//            Gdx.graphics.isContinuousRendering = true
+//        } else if (goalCam.position.x > realCam.position.x) {
+//            realCam.position.x += scrollSpeed
+//            if (goalCam.position.x < realCam.position.x) realCam.position.x = goalCam.position.x
+//            Gdx.graphics.isContinuousRendering = true
+//        }
     }
     override fun dispose() {
         batch.dispose()
@@ -199,10 +211,10 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
      * ignores the dual camera setup and just moves immediately so there's no lag
      */
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        val x = Gdx.input.deltaX.toFloat() * realCam.zoom * mouseSens
-        val y = Gdx.input.deltaY.toFloat() * realCam.zoom * mouseSens
-        realCam.translate(x, y)
-        goalCam.translate(x, y)
+        val xd = Gdx.input.deltaX.toFloat()  * mouseSens
+        val yd = Gdx.input.deltaY.toFloat()  * mouseSens
+        x+=xd
+        y+=yd
         Gdx.graphics.isContinuousRendering = true
         return true
     }
@@ -215,9 +227,9 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
         println(amount)
 
         if (amount > 0) {
-            goalCam.zoom *= zoomSens
+            zoom *= zoomSens
         } else {
-            goalCam.zoom /= zoomSens
+            zoom /= zoomSens
         }
         Gdx.graphics.isContinuousRendering = true
         return true
@@ -227,7 +239,7 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
     override fun keyUp(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.O -> requestFile()
-            Input.Keys.SPACE -> goalCam.translate(0f, 1000f)
+           // Input.Keys.SPACE -> goalCam.translate(0f, 1000f)
             Input.Keys.B -> comic?.swapFilter()
             Input.Keys.DOWN -> scrollDown = false
             Input.Keys.UP -> scrollUp = false
