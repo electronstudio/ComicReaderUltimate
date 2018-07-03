@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import org.apache.tika.Tika
+import uk.co.electronstudio.App.Companion.pleaseRender
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -17,22 +18,41 @@ abstract class Comic(val filename: String) {
     private var loaded=0
 
     fun loadUnloadedTexturesFromPixmaps() {
+        var count=0
+        var time = System.nanoTime()
         pages.forEach{page->
-            if(page.previewTexture ==null){
-                page.loadPreviewTexture()
-                Gdx.graphics.isContinuousRendering = true
-                Gdx.graphics.requestRendering()
-            }
-            if(loaded<10){
+        //    if(loaded<10000){
                 if(page.texture==null){
                     page.loadTexture()
                     loaded++
-                    Gdx.graphics.isContinuousRendering = true
-                    Gdx.graphics.requestRendering()
+                    count++
+                    pleaseRender()
                 }
-            }
+         //   }
+        }
+        if(count>0){
+            val x = ((System.nanoTime() - time) / 1000000f).toInt()
+            println("Loaded $count textures in $x ms")
         }
     }
+
+    fun loadPreviewTexturesFromPixmaps() {
+        var count=0
+        var time = System.nanoTime()
+        pages.forEach{page->
+            if(page.previewTexture ==null){
+                page.loadPreviewTexture()
+                count++
+                pleaseRender()
+            }
+
+        }
+        if(count>0){
+            val x = ((System.nanoTime() - time) / 1000000f).toInt()
+            println("Loaded $count preview textures in $x ms")
+        }
+    }
+
 
     fun render(batch: SpriteBatch,  cols:Int) {
         var x = 0f
@@ -73,8 +93,10 @@ abstract class Comic(val filename: String) {
             val mimeType = tika.detect(File(filename));
             println("mimetype: $mimeType")
             return when(mimeType){
-                "application/x-rar-compressed", "application/vnd.rar", "application/x-cbr" -> RarComic(filename)
-                "application/zip", "application/vnd.comicbook+zip" -> ZipComic(filename)
+                "application/x-rar-compressed", "application/vnd.rar", "application/x-cbr" -> RarComicThreaded(filename)
+                "application/zip", "application/vnd.comicbook+zip" -> ZipComicThreaded(filename)
+                "image/jpeg" -> JpgComic(filename)
+
                 else -> throw Exception("unknown file type $mimeType")
             }
 

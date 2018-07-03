@@ -124,7 +124,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
         //chooser.setFillParent(true)
        window2.setFillParent(true)
         table!!.setFillParent(true)
-        stage!!.addActor(window2)
+        stage!!.addActor(window)
 
         //table!!.setDebug(true) // This is optional, but enables debug lines for tables.
 

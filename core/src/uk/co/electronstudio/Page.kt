@@ -4,6 +4,16 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 
+/**
+ * Contains a pixmap (the raw image data) and optionally a texture built from the pixmap and a smaller preview texture
+ * Textures can only be created on the main thread so if it hasnt done it yet these will be null
+ * The preview texture is not really used currently...
+ *   * it's faster to load, but the full texture loads in 20ms on modern system so hardly seems worth displaying the
+ *   preview for all of 20ms.  might be on android
+ *   * if the system ruhs out of vram then we should unload some textures. currently not doing this. but if we did
+ *   unload, and the user tried to display the page while unloaded, then preview would be useful to display.
+ *   * also might be worth caching the previews so we can instantly re-open a Comic we have read before.
+ */
 class Page(internal val pixmap: Pixmap) {
 
     var texture: TextureRegion? = null
@@ -11,6 +21,26 @@ class Page(internal val pixmap: Pixmap) {
     var previewTexture: TextureRegion? = null
 
 
+    fun heapUsed() = pixmap.pixels.array().size
+
+
+
+    fun vramUsed(): Int {
+        val width = texture?.texture?.width
+        val height = texture?.texture?.height
+        var vram = 0
+        if(width != null && height != null){
+            vram += width*height*3
+        }
+        val pwidth = previewTexture?.texture?.width
+        val pheight = previewTexture?.texture?.height
+
+        if(pwidth != null && pheight != null){
+            vram += pwidth*pheight*3
+        }
+
+        return vram
+    }
 
     fun loadPreviewTexture(){
         val smallMap=Pixmap(256,(pixmap.height*(256f/pixmap.width.toFloat())).toInt(),Pixmap.Format.RGB888)
@@ -19,9 +49,11 @@ class Page(internal val pixmap: Pixmap) {
         smallMap.drawPixmap(pixmap, 0, 0, pixmap.width, pixmap.height, 0, 0, smallMap.width, smallMap.height)
         previewTexture = TextureRegion(Texture(smallMap))
         previewTexture?.flip(false, true)
+        smallMap.dispose()
     }
 
     fun loadTexture() {
+    //    Thread.sleep(1000)
         texture?.texture?.dispose()
         val t = Texture(pixmap, Pixmap.Format.RGB888, false)
         texture = TextureRegion(t)

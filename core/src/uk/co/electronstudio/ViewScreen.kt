@@ -51,16 +51,13 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
 
 
 
-        realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+
 
         //    Gdx.graphics.isContinuousRendering = false;
         //   Gdx.graphics.requestRendering();
 
-        Gdx.input.inputProcessor = this
 
-        realCam.update()
-        goalCam.update()
+
 
 
         //if passed comic, attempt to load it
@@ -68,18 +65,36 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
 
         if(fileToLoad!=null){
             loadComic(fileToLoad)
+        }else {
+              requestFile()
         }
-
-        //if fail...
-      //  requestFile()
     }
+
+    override fun resize(width: Int, height: Int) {
+        println("resize")
+        super.resize(width, height)
+        realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        realCam.update()
+        goalCam.update()
+        Gdx.input.inputProcessor = this
+
+    }
+
+    override fun show() {
+        println("show")
+        super.show()
+        Gdx.input.inputProcessor = this
+    }
+
+
 
     private fun requestFile() {
         val conf = NativeFileChooserConfiguration()
 
       //  conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
 
-        conf.title = "Choose cbr/cbz"
+        conf.title = "Choose cbr/cbz/jpg"
 
 
         app.fileChooser.chooseFile(conf, object : NativeFileChooserCallback {
@@ -104,9 +119,11 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
         val c=Comic.factory(filename)
 
         thread(start = true) {
-            println("starting")
+            println("starting pixmap load")
+            var time = System.nanoTime()
             c.loadPixmaps()
-            println("loaded")
+            val x = ((System.nanoTime() - time) / 1000000f).toInt()
+            println("loaded all pixmaps from archive in $x ms")
         }
 
         comic = c
@@ -114,6 +131,7 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
 
     override fun render(delta: Float) {
         Gdx.graphics.isContinuousRendering = false
+        comic?.loadPreviewTexturesFromPixmaps()
         comic?.loadUnloadedTexturesFromPixmaps()
         processKeyEvents()
         processMouseEvents()

@@ -8,7 +8,7 @@ import net.spookygames.gdx.nativefilechooser.NativeFileChooser
 class App(val fileChooser: NativeFileChooser, val args: Array<String>) : Game() {
 
     lateinit var viewScreen: ViewScreen
-  //  lateinit var menuScreen: MenuScreen
+    lateinit var menuScreen: MenuScreen
 
 
     override fun create() {
@@ -21,6 +21,13 @@ class App(val fileChooser: NativeFileChooser, val args: Array<String>) : Game() 
 
     }
 
+    companion object {
+        fun pleaseRender() {
+            Gdx.graphics.isContinuousRendering = true
+            Gdx.graphics.requestRendering()
+        }
+
+    }
 
 }
 
