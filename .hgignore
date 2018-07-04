@@ -60,6 +60,10 @@ nb-configuration.xml
 .idea
 .idea/
 .idea/*
+.idea/**
+.idea/modules/*
+.idea/modules/**
+
 
 ## Gradle
 

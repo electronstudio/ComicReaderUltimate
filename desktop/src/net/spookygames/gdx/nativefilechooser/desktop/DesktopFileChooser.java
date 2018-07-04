@@ -106,7 +106,7 @@ public class DesktopFileChooser implements NativeFileChooser {
 		// Present it to the world
 
 		Gdx.input.setCursorCatched(false);
-		//Gdx.graphics.setWindowedMode(10, 10);
+		Gdx.graphics.setWindowedMode(10, 10);
 		fileDialog.setVisible(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		Gdx.input.setCursorCatched(true);
