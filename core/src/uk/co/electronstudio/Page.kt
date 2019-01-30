@@ -23,6 +23,8 @@ class Page(internal val pixmap: Pixmap) {
 
     fun heapUsed() = pixmap.pixels.array().size
 
+    val width = pixmap.width.toFloat()
+    val height = pixmap.height.toFloat()
 
 
     fun vramUsed(): Int {
@@ -48,16 +50,24 @@ class Page(internal val pixmap: Pixmap) {
         pixmap.setFilter(Pixmap.Filter.BiLinear)
         smallMap.drawPixmap(pixmap, 0, 0, pixmap.width, pixmap.height, 0, 0, smallMap.width, smallMap.height)
         previewTexture = TextureRegion(Texture(smallMap))
-        previewTexture?.flip(false, true)
+        previewTexture?.let {
+            it.flip(false, true)
+        }
+
         smallMap.dispose()
+
+
+
     }
 
     fun loadTexture() {
-    //    Thread.sleep(1000)
+        //    Thread.sleep(1000)
         texture?.texture?.dispose()
-        val t = Texture(pixmap, Pixmap.Format.RGB888, false)
+        val t = Texture(pixmap, Pixmap.Format.RGB888, true)
         texture = TextureRegion(t)
-        texture?.flip(false, true)
+        texture?.let {
+           it.flip(false, true)
+        }
 
 
 

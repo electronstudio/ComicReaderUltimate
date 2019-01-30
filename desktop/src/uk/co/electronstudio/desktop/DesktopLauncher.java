@@ -15,6 +15,10 @@ public class DesktopLauncher {
 	public static void main (String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		//config.fullscreen=true;
+        config.vSyncEnabled = true;
+//        config.useGL30 = true;
+//        config.gles30ContextMajorVersion = 3;
+//        config.gles30ContextMinorVersion = 2;
 
         Application.getApplication().setOpenFileHandler((AppEvent.OpenFilesEvent ofe) -> {
             List<File> files = ofe.getFiles();
@@ -32,8 +36,6 @@ public class DesktopLauncher {
             }
         });
 		new LwjglApplication(new App(new DesktopFileChooser(), args), config);
-
-
 
 
 	}

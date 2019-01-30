@@ -6,11 +6,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import org.apache.tika.Tika
 import uk.co.electronstudio.App.Companion.pleaseRender
 import java.io.File
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.IntBuffer
 import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class Comic(val filename: String) {
      val pages = CopyOnWriteArrayList<Page>()
-     private var filter = Texture.TextureFilter.Linear
+    var filter = Texture.TextureFilter.Linear
      val imageRegex = ".*(jpg|png|bmp|jpeg)".toRegex(RegexOption.IGNORE_CASE)
 
 
@@ -51,31 +54,24 @@ abstract class Comic(val filename: String) {
             val x = ((System.nanoTime() - time) / 1000000f).toInt()
             println("Loaded $count preview textures in $x ms")
         }
+
+//        val buffer =  ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer()
+//        Gdx.gl.glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX.toInt(), buffer)
+//        println("VIDEO RAM: ${buffer[0]} ${buffer[1]} ${buffer[2]} ${buffer[3]}")
+//        println("VIDEO RAM: ${buffer[4]} ${buffer[5]} ${buffer[6]} ${buffer[7]}")
+//        println("VIDEO RAM: ${buffer[8]} ${buffer[9]} ${buffer[10]} ${buffer[11]}")
+//        println("VIDEO RAM: ${buffer[12]} ${buffer[13]} ${buffer[14]} ${buffer[15]}")
+
     }
 
 
-    fun render(batch: SpriteBatch,  cols:Int) {
-        var x = 0f
-        var y = 0f
+    val GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX      =    0x9047
+    val GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX  =  0x9048
+    val GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX = 0x9049
+    val GPU_MEMORY_INFO_EVICTION_COUNT_NVX         =   0x904A
+    val GPU_MEMORY_INFO_EVICTED_MEMORY_NVX         =   0x904B
 
-        var col = 0
 
-
-        pages.forEach{page:Page ->
-            val t = page.texture ?: page.previewTexture
-            t?.let {
-                it.texture?.setFilter(filter, filter)
-                batch.draw(it, x, y, page.pixmap.width.toFloat(), page.pixmap.height.toFloat())
-                x += page.pixmap.width
-                col++
-                if (col == cols) {
-                    col = 0
-                    x = 0f
-                    y += page.pixmap.height
-                }
-            }
-        }
-    }
 
     fun swapFilter() {
         filter = if (filter == Texture.TextureFilter.Linear) {

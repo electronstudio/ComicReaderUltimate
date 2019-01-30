@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
@@ -16,7 +17,7 @@ import kotlin.concurrent.thread
 class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProcessor {
 
 
-    private var batch: SpriteBatch = SpriteBatch()
+    private var batch: SpriteBatch = SpriteBatch()//5000, createDefaultShaderGL3())
 
     private val zoomSens = 1.1f
     private val mouseSens = 2f
@@ -75,6 +76,9 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
         super.resize(width, height)
         realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+
+        goalCam.zoom=1f
+
         realCam.update()
         goalCam.update()
         Gdx.input.inputProcessor = this
@@ -146,8 +150,41 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         batch.begin()
-        comic?.render(batch, cols)
+        comic?.let {
+            render(it, batch, cols)
+        }
+
         batch.end()
+    }
+
+    fun render(comic: Comic, batch: SpriteBatch,  cols:Int) {
+        var x = 0f
+        var y = 0f
+
+        var col = 0
+
+
+
+        var c=0
+        comic.pages.forEach{page:Page ->
+
+
+            val t = if(realCam.zoom>10f) page.previewTexture else page.texture ?: page.previewTexture
+            //val t = page.previewTexture
+            t?.let {
+                it.texture?.setFilter(comic.filter, comic.filter)
+                if(realCam.frustum.sphereInFrustum(x+page.width/2, y+page.height/2, 0f, page.height/2)) {
+                    batch.draw(it, x, y, page.pixmap.width.toFloat(), page.pixmap.height.toFloat())
+                }
+                x += page.pixmap.width
+                col++
+                if (col == cols) {
+                    col = 0
+                    x = 0f
+                    y += page.pixmap.height
+                }
+            }
+        }
     }
 
     private fun processKeyEvents() {
@@ -274,6 +311,42 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
 
 
 
+    fun createDefaultShaderGL3(): ShaderProgram {
+        val vertexShader = ("in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" + //
+                "in vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" + //
+                "in vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" + //
+                "uniform mat4 u_projTrans;\n" + //
+                "out vec4 v_color;\n" + //
+                "out vec2 v_texCoords;\n" + //
+                "\n" + //
+                "void main()\n" + //
+                "{\n" + //
+                "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" + //
+                "   v_color.a = v_color.a * (255.0/254.0);\n" + //
+                "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" + //
+                "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" + //
+                "}\n")
+        val fragmentShader = ("#ifdef GL_ES\n" + //
+                "#define LOWP lowp\n" + //
+                "precision mediump float;\n" + //
+                "#else\n" + //
+                "#define LOWP \n" + //
+                "#endif\n" + //
+                "in LOWP vec4 v_color;\n" + //
+                "in vec2 v_texCoords;\n" + //
+                "out vec4 fragColor;\n" + //
+                "uniform sampler2D u_texture;\n" + //
+                "void main()\n" + //
+                "{\n" + //
+                "  fragColor = v_color * texture(u_texture, v_texCoords);\n" + //
+                "}")
+
+        ShaderProgram.prependFragmentCode = "#version 330\n"
+        ShaderProgram.prependVertexCode = "#version 330\n"
+        val shader = ShaderProgram(vertexShader, fragmentShader)
+        if (shader.isCompiled == false) throw IllegalArgumentException("Error compiling shader: " + shader.log)
+        return shader
+    }
 
 
 }

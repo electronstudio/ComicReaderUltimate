@@ -139,7 +139,7 @@ class ViewScreen2(val app: App, fileToLoad: String?): ScreenAdapter(), InputProc
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         batch.begin()
-        comic?.render(batch, cols)
+       // comic?.render(batch, cols)
         batch.end()
     }
 

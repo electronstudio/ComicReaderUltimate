@@ -10,15 +10,18 @@ import java.util.concurrent.TimeUnit
 
 class ZipComicThreaded(filename: String):Comic(filename) {
 
-    private val es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()-1)
+    val threads = Runtime.getRuntime().availableProcessors()
+
+    private val es = Executors.newFixedThreadPool(threads)
 
     override fun loadPixmaps() {
 
 
 
 
+
         val zipFile = ZipFile(filename)
-        println("zip open")
+        println("zip open, $threads threads")
         zipFile.use {
             it.entries().toList().filter { imageRegex.matches(it.name) }.forEach {
                 println("zip entry")
