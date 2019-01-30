@@ -8,8 +8,11 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import com.badlogic.gdx.math.Vector3
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
@@ -132,8 +135,30 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         comic?.loadUnloadedTexturesFromPixmaps()
         processKeyEvents()
         processMouseEvents()
+        constrainScrolling()
         draw()
     }
+
+    private fun constrainScrolling(){
+       // if(realCam.position.x< -Gdx.graphics.width/2f) realCam.position.x=-Gdx.graphics.width/2f
+       // if(realCam.position.x> Gdx.graphics.width) realCam.position.x=Gdx.graphics.width.toFloat()
+     //   if(realCam.position.y<0f) realCam.position.y=0f
+
+//        var a = realCam.unproject(Vector3(0f,0f,0f))
+//        while(a.x<0){
+//            println("unproject x ${a.x}")
+//            realCam.translate(1f, 0f)
+//            realCam.update()
+//            goalCam.translate(1f, 0f)
+//            goalCam.update()
+//            a = realCam.unproject(Vector3(0f,0f,0f))
+//        }
+
+    }
+
+    val font =  BitmapFont()
+    val textBatch = SpriteBatch()
+
 
     private fun draw() {
         goalCam.update()
@@ -146,8 +171,15 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         comic?.let {
             render(it, batch, cols)
         }
-
         batch.end()
+
+
+
+        textBatch.begin()
+        font.draw(textBatch, "x: ${realCam.position.x}", 10f, 10f);
+        textBatch.end()
+
+
     }
 
     fun render(comic: Comic, batch: SpriteBatch, cols: Int) {
