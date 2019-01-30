@@ -21,12 +21,13 @@ import kotlin.concurrent.thread
 
 class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProcessor {
 
-
     private var batch: SpriteBatch = SpriteBatch() //5000, createDefaultShaderGL3())
+    private var realCam: OrthographicCamera = OrthographicCamera()
+    private var goalCam: OrthographicCamera = OrthographicCamera()
+    val font =  BitmapFont()
+    val textBatch = SpriteBatch()
 
-    private val zoomSens = 1.1f
-    private val mouseSens = 2f
-    private val mouseSmoothing = false
+    private var comic: Comic? = null
 
     private var scrollDown = false
     private var scrollUp = false
@@ -35,34 +36,19 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     private var zoomIn = false
     private var zoomOut = false
 
-    private var realCam: OrthographicCamera = OrthographicCamera()
-    private var goalCam: OrthographicCamera = OrthographicCamera()
-
-
-    //var comic = Comic("/Volumes/Home/rich/test.cbz")
-    private var comic: Comic? = null
-
-
-    //private val cols = 2
     private var doublePage = false
-
+    private var continuousScroll = false
     private val background: Color = Color.BLACK
-
     private val zoomSpeed = 0.04f // 0.01 - 0.10
-
     private val scrollSpeed = 20f
+    private val zoomSens = 1.1f
+    private val mouseSens = 2f
+    private val mouseSmoothing = false
 
 
     init {
-
-
-        //    Gdx.graphics.isContinuousRendering = false;
-        //   Gdx.graphics.requestRendering();
-
-
         //if passed comic, attempt to load it
         //else attempt to load previous comic
-
         if (fileToLoad != null) {
             loadComic(fileToLoad)
         } else {
@@ -142,7 +128,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         draw()
     }
 
-    var centreX=false
+
 
     private fun constrainScrolling(){
 
@@ -151,19 +137,10 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
             if(pageWidth==null) return
             val contentWidth = if(doublePage) pageWidth*2 else pageWidth
             if(contentWidth/realCam.zoom < Gdx.graphics.width.toFloat()){
-                centreX=true
                 realCam.position.x=contentWidth/2f
             }else{
-                centreX=false
-               // realCam.position.x=Math.max( realCam.position.x, Gdx.graphics.width*realCam.zoom/2f)
-              //  realCam.position.x=Math.min( realCam.position.x, contentWidth-(Gdx.graphics.width/2f)*realCam.zoom)
-
                 realCam.position.x= MathUtils.clamp(  realCam.position.x, Gdx.graphics.width*realCam.zoom/2f, contentWidth-(Gdx.graphics.width/2f)*realCam.zoom)
-
                 goalCam.position.x= MathUtils.clamp(  goalCam.position.x, Gdx.graphics.width*goalCam.zoom/2f, contentWidth-(Gdx.graphics.width/2f)*goalCam.zoom)
-
-             //   if(realCam.position.x< Gdx.graphics.width*realCam.zoom/2f) realCam.position.x=Gdx.graphics.width*realCam.zoom/2f
-                //if(realCam.position.x> contentWidth/2f) realCam.position.x=contentWidth/2f
             }
             realCam.position.y=Math.max( realCam.position.y, Gdx.graphics.height*realCam.zoom/2f)
             goalCam.position.y=Math.max( goalCam.position.y, Gdx.graphics.height*goalCam.zoom/2f)
@@ -171,27 +148,10 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
             //fixme add up all the page heights to find bottom scroll limit
 
         }
-
-       // if(realCam.position.x< -Gdx.graphics.width/2f) realCam.position.x=-Gdx.graphics.width/2f
-       // if(realCam.position.x> Gdx.graphics.width) realCam.position.x=Gdx.graphics.width.toFloat()
-     //   if(realCam.position.y<0f) realCam.position.y=0f
-
-//        var a = realCam.unproject(Vector3(0f,0f,0f))
-//        while(a.x<0){
-//            println("unproject x ${a.x}")
-//            realCam.translate(1f, 0f)
-//            realCam.update()
-//            goalCam.translate(1f, 0f)
-//            goalCam.update()
-//            a = realCam.unproject(Vector3(0f,0f,0f))
-//        }
-
     }
 
-    val font =  BitmapFont()
-    val textBatch = SpriteBatch()
 
-    val testTexture = Texture("badlogic.jpg")
+
 
     private fun draw() {
         goalCam.update()
@@ -204,13 +164,11 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         comic?.let {
             render(it, batch, if(doublePage) 2 else 1)
         }
-        batch.draw(testTexture,0f,0f)
         batch.end()
 
 
-
         textBatch.begin()
-        font.draw(textBatch, "centrex: ${centreX} x: ${realCam.position.x} width: ${comic?.pages?.get(0)?.width}", 10f, 10f);
+        font.draw(textBatch, "x: ${realCam.position.x} width: ${comic?.pages?.get(0)?.width}", 10f, 10f);
         textBatch.end()
 
 
@@ -253,7 +211,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
 
     private fun processKeyEvents() {
         if (scrollLeft || scrollUp || scrollDown || scrollRight || zoomOut || zoomIn) {
-            Gdx.graphics.isContinuousRendering = true
+            App.pleaseRender()
         }
 
         val xd: Float = if (scrollLeft) -scrollSpeed else if (scrollRight) scrollSpeed else 0f
@@ -272,27 +230,26 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         if (goalCam.zoom < realCam.zoom) {
             realCam.zoom *= (1 - zoomSpeed)
             if (goalCam.zoom > realCam.zoom) realCam.zoom = goalCam.zoom
-            Gdx.graphics.isContinuousRendering = true
+            App.pleaseRender()
         } else if (goalCam.zoom > realCam.zoom) {
             realCam.zoom *= (1 + zoomSpeed)
             if (goalCam.zoom < realCam.zoom) realCam.zoom = goalCam.zoom
-            Gdx.graphics.isContinuousRendering = true
+            App.pleaseRender()
         }
 
         if (goalCam.position.y < realCam.position.y) {
             realCam.position.y -= scrollSpeed
             if (goalCam.position.y > realCam.position.y) realCam.position.y = goalCam.position.y
-            Gdx.graphics.isContinuousRendering = true
+            App.pleaseRender()
         } else if (goalCam.position.y > realCam.position.y) {
             realCam.position.y += scrollSpeed
             if (goalCam.position.y < realCam.position.y) realCam.position.y = goalCam.position.y
-            Gdx.graphics.isContinuousRendering = true
+            App.pleaseRender()
         }
     }
 
     override fun dispose() {
         batch.dispose()
-        //   img.dispose()
     }
 
     val mouseHistoryX = ArrayList<Float>()
@@ -301,7 +258,6 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val x = Gdx.input.deltaX.toFloat() * realCam.zoom * mouseSens
         val y = Gdx.input.deltaY.toFloat() * realCam.zoom * mouseSens
-
 
         if(mouseSmoothing) {
             println("mouse moved y $y")
@@ -333,7 +289,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         } else {
             goalCam.zoom /= zoomSens
         }
-        Gdx.graphics.isContinuousRendering = true
+        App.pleaseRender()
         return true
 
     }
@@ -350,14 +306,14 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
             Input.Keys.EQUALS -> zoomIn = false
             Input.Keys.MINUS -> zoomOut = false
         }
-        Gdx.graphics.isContinuousRendering = true
+        App.pleaseRender()
 
 
         return true
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        Gdx.graphics.isContinuousRendering = true
+        App.pleaseRender()
         return true
     }
 
@@ -378,17 +334,17 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
             Input.Keys.MINUS -> zoomOut = true
             Input.Keys.D -> doublePage = !doublePage
         }
-        Gdx.graphics.isContinuousRendering = true
+        App.pleaseRender()
         return true
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        Gdx.graphics.isContinuousRendering = true
+        App.pleaseRender()
         return true
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        Gdx.graphics.isContinuousRendering = true
+        App.pleaseRender()
         return true
     }
 
