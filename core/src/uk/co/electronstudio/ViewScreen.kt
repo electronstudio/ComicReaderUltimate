@@ -8,10 +8,12 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
@@ -41,7 +43,8 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     private var comic: Comic? = null
 
 
-    private val cols = 2
+    //private val cols = 2
+    private var doublePage = false
 
     private val background: Color = Color.BLACK
 
@@ -139,7 +142,36 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         draw()
     }
 
+    var centreX=false
+
     private fun constrainScrolling(){
+
+        comic?.let {
+            val pageWidth = it.pages[0].width
+            if(pageWidth==null) return
+            val contentWidth = if(doublePage) pageWidth*2 else pageWidth
+            if(contentWidth/realCam.zoom < Gdx.graphics.width.toFloat()){
+                centreX=true
+                realCam.position.x=contentWidth/2f
+            }else{
+                centreX=false
+               // realCam.position.x=Math.max( realCam.position.x, Gdx.graphics.width*realCam.zoom/2f)
+              //  realCam.position.x=Math.min( realCam.position.x, contentWidth-(Gdx.graphics.width/2f)*realCam.zoom)
+
+                realCam.position.x= MathUtils.clamp(  realCam.position.x, Gdx.graphics.width*realCam.zoom/2f, contentWidth-(Gdx.graphics.width/2f)*realCam.zoom)
+
+                goalCam.position.x= MathUtils.clamp(  goalCam.position.x, Gdx.graphics.width*goalCam.zoom/2f, contentWidth-(Gdx.graphics.width/2f)*goalCam.zoom)
+
+             //   if(realCam.position.x< Gdx.graphics.width*realCam.zoom/2f) realCam.position.x=Gdx.graphics.width*realCam.zoom/2f
+                //if(realCam.position.x> contentWidth/2f) realCam.position.x=contentWidth/2f
+            }
+            realCam.position.y=Math.max( realCam.position.y, Gdx.graphics.height*realCam.zoom/2f)
+            goalCam.position.y=Math.max( goalCam.position.y, Gdx.graphics.height*goalCam.zoom/2f)
+
+            //fixme add up all the page heights to find bottom scroll limit
+
+        }
+
        // if(realCam.position.x< -Gdx.graphics.width/2f) realCam.position.x=-Gdx.graphics.width/2f
        // if(realCam.position.x> Gdx.graphics.width) realCam.position.x=Gdx.graphics.width.toFloat()
      //   if(realCam.position.y<0f) realCam.position.y=0f
@@ -159,6 +191,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     val font =  BitmapFont()
     val textBatch = SpriteBatch()
 
+    val testTexture = Texture("badlogic.jpg")
 
     private fun draw() {
         goalCam.update()
@@ -169,14 +202,15 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
 
         batch.begin()
         comic?.let {
-            render(it, batch, cols)
+            render(it, batch, if(doublePage) 2 else 1)
         }
+        batch.draw(testTexture,0f,0f)
         batch.end()
 
 
 
         textBatch.begin()
-        font.draw(textBatch, "x: ${realCam.position.x}", 10f, 10f);
+        font.draw(textBatch, "centrex: ${centreX} x: ${realCam.position.x} width: ${comic?.pages?.get(0)?.width}", 10f, 10f);
         textBatch.end()
 
 
@@ -191,8 +225,6 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
 
         var c = 0
         comic.pages?.forEach { page: Page ->
-
-
             val pixmap = page.pixmap
             if (pixmap == null) return@forEach
             val tex = if (realCam.zoom > 10f) page.previewTexture else page.texture ?: page.previewTexture
@@ -225,7 +257,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         }
 
         val xd: Float = if (scrollLeft) -scrollSpeed else if (scrollRight) scrollSpeed else 0f
-        val yd: Float = if (scrollUp) scrollSpeed else if (scrollDown) -scrollSpeed else 0f
+        val yd: Float = if (scrollUp) -scrollSpeed else if (scrollDown) scrollSpeed else 0f
         val zd: Float = if (zoomIn) 1 - zoomSpeed else if (zoomOut) 1 + zoomSpeed else 1f
 
         realCam.translate(xd, yd)
@@ -344,6 +376,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
             Input.Keys.RIGHT -> scrollRight = true
             Input.Keys.EQUALS -> zoomIn = true
             Input.Keys.MINUS -> zoomOut = true
+            Input.Keys.D -> doublePage = !doublePage
         }
         Gdx.graphics.isContinuousRendering = true
         return true
