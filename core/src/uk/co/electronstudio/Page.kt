@@ -23,8 +23,8 @@ class Page(internal var pixmap: Pixmap?) {
 
    // fun heapUsed() = pixmap.pixels.array().size
 
-    val width = pixmap?.width?.toFloat()
-    val height = pixmap?.height?.toFloat()
+    val width: Float = pixmap?.width?.toFloat() ?: 0f
+    val height: Float = pixmap?.height?.toFloat() ?: 0f
 
 
 //    fun vramUsed(): Int {
