@@ -14,10 +14,10 @@ import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
 
-class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProcessor {
+class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProcessor {
 
 
-    private var batch: SpriteBatch = SpriteBatch()//5000, createDefaultShaderGL3())
+    private var batch: SpriteBatch = SpriteBatch() //5000, createDefaultShaderGL3())
 
     private val zoomSens = 1.1f
     private val mouseSens = 2f
@@ -34,7 +34,7 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
 
 
     //var comic = Comic("/Volumes/Home/rich/test.cbz")
-    private var comic:Comic? = null
+    private var comic: Comic? = null
 
 
     private val cols = 1
@@ -49,25 +49,17 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
     init {
 
 
-
-
-
-
-
         //    Gdx.graphics.isContinuousRendering = false;
         //   Gdx.graphics.requestRendering();
-
-
-
 
 
         //if passed comic, attempt to load it
         //else attempt to load previous comic
 
-        if(fileToLoad!=null){
+        if (fileToLoad != null) {
             loadComic(fileToLoad)
-        }else {
-              requestFile()
+        } else {
+            requestFile()
         }
     }
 
@@ -77,7 +69,7 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
         realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-        goalCam.zoom=1f
+        goalCam.zoom = 1f
 
         realCam.update()
         goalCam.update()
@@ -92,11 +84,10 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
     }
 
 
-
     private fun requestFile() {
         val conf = NativeFileChooserConfiguration()
 
-      //  conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
+        //  conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
 
         conf.title = "Choose cbr/cbz/jpg"
 
@@ -117,10 +108,10 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
     }
 
 
-    fun loadComic(filename:String){
+    fun loadComic(filename: String) {
         println("loadcomic $filename")
 
-        val c=Comic.factory(filename)
+        val c = Comic.factory(filename)
 
         thread(start = true) {
             println("starting pixmap load")
@@ -157,34 +148,41 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
         batch.end()
     }
 
-    fun render(comic: Comic, batch: SpriteBatch,  cols:Int) {
+    fun render(comic: Comic, batch: SpriteBatch, cols: Int) {
         var x = 0f
         var y = 0f
 
         var col = 0
 
 
+        var c = 0
+        comic.pages?.forEach { page: Page ->
 
-        var c=0
-        comic.pages.forEach{page:Page ->
 
-
-            val t = if(realCam.zoom>10f) page.previewTexture else page.texture ?: page.previewTexture
+            val pixmap = page.pixmap
+            if (pixmap == null) return@forEach
+            val tex = if (realCam.zoom > 10f) page.previewTexture else page.texture ?: page.previewTexture
+            if (tex == null) return@forEach
             //val t = page.previewTexture
-            t?.let {
-                it.texture?.setFilter(comic.filter, comic.filter)
-                if(realCam.frustum.sphereInFrustum(x+page.width/2, y+page.height/2, 0f, page.height/2)) {
-                    batch.draw(it, x, y, page.pixmap.width.toFloat(), page.pixmap.height.toFloat())
-                }
-                x += page.pixmap.width
-                col++
-                if (col == cols) {
-                    col = 0
-                    x = 0f
-                    y += page.pixmap.height
-                }
+
+
+            tex.texture?.setFilter(comic.filter, comic.filter)
+            if (realCam.frustum.sphereInFrustum(x + pixmap.width / 2,
+                    y + pixmap.height / 2,
+                    0f,
+                    pixmap.height.toFloat())
+            ) {
+                batch.draw(tex, x, y, pixmap.width.toFloat(), pixmap.height.toFloat())
+            }
+            x += pixmap.width
+            col++
+            if (col == cols) {
+                col = 0
+                x = 0f
+                y += pixmap.height
             }
         }
+
     }
 
     private fun processKeyEvents() {
@@ -225,6 +223,7 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
             Gdx.graphics.isContinuousRendering = true
         }
     }
+
     override fun dispose() {
         batch.dispose()
         //   img.dispose()
@@ -308,7 +307,6 @@ class ViewScreen(val app: App, fileToLoad: String?): ScreenAdapter(), InputProce
         Gdx.graphics.isContinuousRendering = true
         return true
     }
-
 
 
     fun createDefaultShaderGL3(): ShaderProgram {

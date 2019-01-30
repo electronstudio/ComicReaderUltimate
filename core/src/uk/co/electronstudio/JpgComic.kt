@@ -9,11 +9,20 @@ import java.util.concurrent.TimeUnit
 import java.util.zip.ZipFile
 
 class JpgComic(filename: String):Comic(filename) {
+    override val pages= ArrayList<Page>()
 
     private val es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()-1)
 
     val file = File(filename)
-    val dir = file.parentFile
+    val dir = if(file.isDirectory) file else file.parentFile
+
+    init {
+        println("file $file")
+        println("dir $dir")
+        dir.listFiles().filter {  imageRegex.matches(it.name) }.forEach {
+            pages.add(Page(null))
+        }
+    }
 
     override fun loadPixmaps() {
 
@@ -22,10 +31,10 @@ class JpgComic(filename: String):Comic(filename) {
 
 
 
-        dir.listFiles().filter {  imageRegex.matches(it.name) }.forEach {
+        dir.listFiles().filter {  imageRegex.matches(it.name) }.forEachIndexed() {i, it ->
             es.submit {
                 val pixmap = Pixmap(FileHandle(it)) //FIXME works on desktop only!
-                pages.add(Page(pixmap))
+                pages[i].pixmap = pixmap
                 App.pleaseRender()
             }
         }

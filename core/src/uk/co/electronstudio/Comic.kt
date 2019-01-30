@@ -12,7 +12,7 @@ import java.nio.IntBuffer
 import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class Comic(val filename: String) {
-     val pages = CopyOnWriteArrayList<Page>()
+     abstract val pages: List<Page>
     var filter = Texture.TextureFilter.Linear
      val imageRegex = ".*(jpg|png|bmp|jpeg)".toRegex(RegexOption.IGNORE_CASE)
 
@@ -23,7 +23,7 @@ abstract class Comic(val filename: String) {
     fun loadUnloadedTexturesFromPixmaps() {
         var count=0
         var time = System.nanoTime()
-        pages.forEach{page->
+        pages?.forEach{page->
         //    if(loaded<10000){
                 if(page.texture==null){
                     page.loadTexture()
@@ -43,7 +43,7 @@ abstract class Comic(val filename: String) {
     fun loadPreviewTexturesFromPixmaps() {
         var count=0
         var time = System.nanoTime()
-        pages.forEach{page->
+        pages?.forEach{page->
             if(page.previewTexture ==null){
                 page.loadPreviewTexture()
                 count++
@@ -66,11 +66,11 @@ abstract class Comic(val filename: String) {
     }
 
 
-    val GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX      =    0x9047
-    val GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX  =  0x9048
-    val GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX = 0x9049
-    val GPU_MEMORY_INFO_EVICTION_COUNT_NVX         =   0x904A
-    val GPU_MEMORY_INFO_EVICTED_MEMORY_NVX         =   0x904B
+//    val GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX      =    0x9047
+//    val GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX  =  0x9048
+//    val GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX = 0x9049
+//    val GPU_MEMORY_INFO_EVICTION_COUNT_NVX         =   0x904A
+//    val GPU_MEMORY_INFO_EVICTED_MEMORY_NVX         =   0x904B
 
 
 
@@ -87,12 +87,13 @@ abstract class Comic(val filename: String) {
     companion object {
         private val tika = Tika()
         fun factory(filename: String):Comic{
+            if(File(filename).isDirectory) return JpgComic(filename)
             val mimeType = tika.detect(File(filename));
             println("mimetype: $mimeType")
             return when(mimeType){
                 "application/x-rar-compressed", "application/vnd.rar", "application/x-cbr" -> RarComicThreaded(filename)
                 "application/zip", "application/vnd.comicbook+zip" -> ZipComicThreaded(filename)
-                "image/jpeg" -> JpgComic(filename)
+                "image/jpeg", "image/png", "image/bmp" -> JpgComic(filename)
 
                 else -> throw Exception("unknown file type $mimeType")
             }

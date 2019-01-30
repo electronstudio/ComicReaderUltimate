@@ -14,41 +14,43 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
  *   unload, and the user tried to display the page while unloaded, then preview would be useful to display.
  *   * also might be worth caching the previews so we can instantly re-open a Comic we have read before.
  */
-class Page(internal val pixmap: Pixmap) {
+class Page(internal var pixmap: Pixmap?) {
 
     var texture: TextureRegion? = null
 
     var previewTexture: TextureRegion? = null
 
 
-    fun heapUsed() = pixmap.pixels.array().size
+   // fun heapUsed() = pixmap.pixels.array().size
 
-    val width = pixmap.width.toFloat()
-    val height = pixmap.height.toFloat()
+    val width = pixmap?.width?.toFloat()
+    val height = pixmap?.height?.toFloat()
 
 
-    fun vramUsed(): Int {
-        val width = texture?.texture?.width
-        val height = texture?.texture?.height
-        var vram = 0
-        if(width != null && height != null){
-            vram += width*height*3
-        }
-        val pwidth = previewTexture?.texture?.width
-        val pheight = previewTexture?.texture?.height
-
-        if(pwidth != null && pheight != null){
-            vram += pwidth*pheight*3
-        }
-
-        return vram
-    }
+//    fun vramUsed(): Int {
+//        val width = texture?.texture?.width
+//        val height = texture?.texture?.height
+//        var vram = 0
+//        if(width != null && height != null){
+//            vram += width*height*3
+//        }
+//        val pwidth = previewTexture?.texture?.width
+//        val pheight = previewTexture?.texture?.height
+//
+//        if(pwidth != null && pheight != null){
+//            vram += pwidth*pheight*3
+//        }
+//
+//        return vram
+//    }
 
     fun loadPreviewTexture(){
-        val smallMap=Pixmap(256,(pixmap.height*(256f/pixmap.width.toFloat())).toInt(),Pixmap.Format.RGB888)
+        val p=pixmap
+        if(p==null) return
+        val smallMap=Pixmap(256,(p.height*(256f/p.width.toFloat())).toInt(),Pixmap.Format.RGB888)
         smallMap.setFilter(Pixmap.Filter.BiLinear)
-        pixmap.setFilter(Pixmap.Filter.BiLinear)
-        smallMap.drawPixmap(pixmap, 0, 0, pixmap.width, pixmap.height, 0, 0, smallMap.width, smallMap.height)
+        p.setFilter(Pixmap.Filter.BiLinear)
+        smallMap.drawPixmap(pixmap, 0, 0, p.width, p.height, 0, 0, smallMap.width, smallMap.height)
         previewTexture = TextureRegion(Texture(smallMap))
         previewTexture?.let {
             it.flip(false, true)
@@ -61,9 +63,10 @@ class Page(internal val pixmap: Pixmap) {
     }
 
     fun loadTexture() {
-        //    Thread.sleep(1000)
+        val p=pixmap
+        if(p==null) return
         texture?.texture?.dispose()
-        val t = Texture(pixmap, Pixmap.Format.RGB888, false)
+        val t = Texture(p, Pixmap.Format.RGB888, false)
         texture = TextureRegion(t)
         texture?.let {
            it.flip(false, true)
@@ -78,6 +81,6 @@ class Page(internal val pixmap: Pixmap) {
     }
     fun dispose(){
         texture?.texture?.dispose()
-        pixmap.dispose()
+        pixmap?.dispose()
     }
 }

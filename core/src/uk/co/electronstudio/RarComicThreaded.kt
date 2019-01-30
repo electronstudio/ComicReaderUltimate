@@ -11,12 +11,12 @@ import java.lang.Exception
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class RarComicThreaded(filename: String) : Comic(filename) {
+    override val pages: ArrayList<Page>
 
     val numThreads = Runtime.getRuntime().availableProcessors() - 1
     val queue = ConcurrentLinkedQueue<Int>()
 
-
-    override fun loadPixmaps() {
+    init {
         println("rar")
         printFreeMemory()
 
@@ -34,10 +34,18 @@ class RarComicThreaded(filename: String) : Comic(filename) {
         val headers = getRarHeaders(rarFile)
         println("headers: ${headers.size}")
 
+        pages = ArrayList()
+
 
         for (i in 0..headers.lastIndex) {
+            pages.add(Page(null))
             queue.add(i)
         }
+    }
+
+
+    override fun loadPixmaps() {
+
 
         val threads: Array<Thread> = Array(numThreads) {
             Thread(RarWorker(this))
@@ -90,7 +98,7 @@ class RarWorker(val comic: RarComicThreaded) : Runnable {
             val extracted = os.toByteArray()
             //   println("extracted ${extracted.size}")
             val pixmap = Pixmap(extracted, 0, os.size())
-            comic.pages.add(Page(pixmap))
+            comic.pages[i].pixmap = pixmap
 
             Gdx.graphics.isContinuousRendering = true
             Gdx.graphics.requestRendering()
