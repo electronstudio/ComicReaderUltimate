@@ -114,6 +114,8 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         }
 
         comic = c
+        currentPage=0
+        moveCameraToStartPosition()
     }
 
     override fun render(delta: Float) {
@@ -132,7 +134,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     private fun constrainScrolling(){
 
         comic?.let {
-            val pageWidth = it.pages[if(continuousScroll) 0 else currentPage].width
+            val pageWidth = it.pages[if(continuousScroll) 0 else currentPage].width()
             if(pageWidth==null) return
             val contentWidth = if(doublePage) pageWidth*2 else pageWidth //fixme wrong if one page is wider than others
             if(contentWidth/realCam.zoom < Gdx.graphics.width.toFloat()){
@@ -148,7 +150,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
             //fixme add up all the page heights to find bottom scroll limit
 
             if(!continuousScroll){
-                val pageHeight = it.pages[currentPage].height
+                val pageHeight = it.pages[currentPage].height()
                 if(pageHeight==null) return
                 if(pageHeight/realCam.zoom < Gdx.graphics.height.toFloat()){
                     realCam.position.y=pageHeight/2f
@@ -205,14 +207,14 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         val tex = page.texture ?: page.previewTexture
         tex?.let {
             tex.texture?.setFilter(comic.filter, comic.filter)
-            batch.draw(it, 0f, 0f, page.width, page.height)
+            batch.draw(it, 0f, 0f, page.width(), page.height())
         }
         if(doublePage && currentPage<comic.pages.lastIndex){
             val page2=comic.pages.get(currentPage+1)
             val tex2 = page2.texture ?: page2.previewTexture
             tex2?.let {
                 tex2.texture?.setFilter(comic.filter, comic.filter)
-                batch.draw(it, page.width, 0f, page2.width, page2.height)
+                batch.draw(it, page.width(), 0f, page2.width(), page2.height())
             }
         }
     }
@@ -233,7 +235,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
                     0f,
                     pixmap.height.toFloat())
             ) {
-                batch.draw(tex, x, y, page.width, page.height)//, pixmap.width.toFloat(), pixmap.height.toFloat())
+                batch.draw(tex, x, y, page.width(), page.height())//pixmap.width.toFloat(), pixmap.height.toFloat())
             }
             x += pixmap.width
             col++
@@ -395,10 +397,10 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     }
 
     fun advance(){
-        if(goalCam.position.y >= ((comic?.pages?.get(currentPage)?.height ?: 0f) - (Gdx.graphics.height / 2f) * realCam.zoom)-1){
+        if(goalCam.position.y >= ((comic?.pages?.get(currentPage)?.height() ?: 0f) - (Gdx.graphics.height / 2f) * realCam.zoom)-1){
             nextPage()
         }else{
-            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height ?: 0f) * 1f )//goalCam.zoom)
+            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * 1f )//goalCam.zoom)
         }
         App.pleaseRender()
     }
