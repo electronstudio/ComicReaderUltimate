@@ -13,8 +13,8 @@ class App(val fileChooser: NativeFileChooser, val args: Array<String>) : Game() 
 
     override fun create() {
 
-        Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
-        Gdx.input.isCursorCatched = true
+      //  Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+      //  Gdx.input.isCursorCatched = true
      //   val testfile = null
         val testfile = "/Volumes/Home/rich/Documents/Vuze Downloads/Buffy the Vampire Slayer - Season 10 TPBs (v01-v06)(2014-2016)(digital)/Buffy the Vampire Slayer - Season 10 v06 - Own It (2016) (Digital) (Kileko-Empire).cbr"
        val testfile2 = "/Volumes/Home/rich/Documents/Vuze Downloads/Buffy Comics Season 9 complete/Buffy the Vampire Slayer Season 9 08.cbz" // null

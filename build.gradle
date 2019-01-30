@@ -9,15 +9,15 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-        classpath group: 'org.mini2Dx', name: 'butler', version: '1.1.2'
+   //     classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+    //    classpath group: 'org.mini2Dx', name: 'butler', version: '1.1.2'
     }
-
+    
 }
 
 allprojects {
-    apply plugin: "eclipse"
-    apply plugin: "idea"
+
+ //   apply plugin: "idea"
 
     version = '1.0'
     ext {
@@ -28,6 +28,7 @@ allprojects {
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
     }
+
 
 
 
@@ -42,9 +43,9 @@ allprojects {
 project(":desktop") {
     apply plugin: "kotlin"
     compileJava {
-        options.fork = true
-        options.forkOptions.executable = 'javac'
-        options.compilerArgs << "-XDignore.symbol.file=true"
+       options.fork = true
+       // options.forkOptions.executable = 'javac'
+       // options.compilerArgs << "-XDignore.symbol.file=true"
     }
 
     dependencies {
@@ -71,6 +72,3 @@ project(":core") {
     }
 }
 
-tasks.eclipse.doLast {
-    delete ".project"
-}
