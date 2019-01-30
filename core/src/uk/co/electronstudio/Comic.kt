@@ -30,6 +30,7 @@ abstract class Comic(val filename: String) {
                     loaded++
                     count++
                     pleaseRender()
+                    if(count>0) return@forEach
                 }
          //   }
         }

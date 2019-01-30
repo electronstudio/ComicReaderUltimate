@@ -63,7 +63,7 @@ class Page(internal val pixmap: Pixmap) {
     fun loadTexture() {
         //    Thread.sleep(1000)
         texture?.texture?.dispose()
-        val t = Texture(pixmap, Pixmap.Format.RGB888, true)
+        val t = Texture(pixmap, Pixmap.Format.RGB888, false)
         texture = TextureRegion(t)
         texture?.let {
            it.flip(false, true)
