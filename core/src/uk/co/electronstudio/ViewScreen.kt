@@ -21,6 +21,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
 
     private val zoomSens = 1.1f
     private val mouseSens = 2f
+    private val mouseSmoothing = false
 
     private var scrollDown = false
     private var scrollUp = false
@@ -37,7 +38,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     private var comic: Comic? = null
 
 
-    private val cols = 1
+    private val cols = 2
 
     private val background: Color = Color.BLACK
 
@@ -125,6 +126,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     }
 
     override fun render(delta: Float) {
+        println("render")
         Gdx.graphics.isContinuousRendering = false
         comic?.loadPreviewTexturesFromPixmaps()
         comic?.loadUnloadedTexturesFromPixmaps()
@@ -191,7 +193,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         }
 
         val xd: Float = if (scrollLeft) -scrollSpeed else if (scrollRight) scrollSpeed else 0f
-        val yd: Float = if (scrollUp) -scrollSpeed else if (scrollDown) -scrollSpeed else 0f
+        val yd: Float = if (scrollUp) scrollSpeed else if (scrollDown) -scrollSpeed else 0f
         val zd: Float = if (zoomIn) 1 - zoomSpeed else if (zoomOut) 1 + zoomSpeed else 1f
 
         realCam.translate(xd, yd)
@@ -229,12 +231,29 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         //   img.dispose()
     }
 
+    val mouseHistoryX = ArrayList<Float>()
+    val mouseHistoryY = ArrayList<Float>()
+
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val x = Gdx.input.deltaX.toFloat() * realCam.zoom * mouseSens
         val y = Gdx.input.deltaY.toFloat() * realCam.zoom * mouseSens
-        realCam.translate(x, y)
-        goalCam.translate(x, y)
-        Gdx.graphics.isContinuousRendering = true
+
+
+        if(mouseSmoothing) {
+            println("mouse moved y $y")
+            mouseHistoryX.add(x)
+            mouseHistoryY.add(y)
+            if(mouseHistoryX.size>10) mouseHistoryX.removeAt(0)
+            if(mouseHistoryY.size>10) mouseHistoryY.removeAt(0)
+            val averageX = mouseHistoryX.average().toFloat()
+            val averageY = mouseHistoryY.average().toFloat()
+            realCam.translate(averageX, averageY)
+            goalCam.translate(averageX, averageY)
+        }else{
+            realCam.translate(x, y)
+            goalCam.translate(x, y)
+        }
+        App.pleaseRender()
         return true
     }
 

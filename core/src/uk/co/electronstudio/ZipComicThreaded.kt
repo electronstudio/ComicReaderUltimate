@@ -12,7 +12,7 @@ class ZipComicThreaded(filename: String):Comic(filename) {
     override val pages = ArrayList<Page>()
     val zipFile = ZipFile(filename)
 
-    val threads = Runtime.getRuntime().availableProcessors()
+    val threads = Runtime.getRuntime().availableProcessors()-1
 
     private val es = Executors.newFixedThreadPool(threads)
 

@@ -25,26 +25,26 @@ abstract class Comic(val filename: String) {
         var time = System.nanoTime()
         pages?.forEach{page->
         //    if(loaded<10000){
-                if(page.texture==null){
+                if(page.texture==null && page.pixmap !=null){
                     page.loadTexture()
                     loaded++
                     count++
                     pleaseRender()
-                    if(count>0) return@forEach
+                    return
                 }
          //   }
         }
-        if(count>0){
-            val x = ((System.nanoTime() - time) / 1000000f).toInt()
-            println("Loaded $count textures in $x ms")
-        }
+//        if(count>0){
+//            val x = ((System.nanoTime() - time) / 1000000f).toInt()
+//            println("Loaded $count textures in $x ms")
+//        }
     }
 
     fun loadPreviewTexturesFromPixmaps() {
         var count=0
         var time = System.nanoTime()
         pages?.forEach{page->
-            if(page.previewTexture ==null){
+            if(page.previewTexture ==null && page.pixmap !=null){
                 page.loadPreviewTexture()
                 count++
                 pleaseRender()
