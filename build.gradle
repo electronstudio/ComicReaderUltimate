@@ -9,8 +9,8 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-   //     classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-    //    classpath group: 'org.mini2Dx', name: 'butler', version: '1.1.2'
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+   //     classpath group: 'org.mini2Dx', name: 'butler', version: '1.1.2'
     }
     
 }
@@ -29,7 +29,13 @@ allprojects {
         aiVersion = '1.8.0'
     }
 
-
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        options.fork = true
+        options.forkOptions.executable = '/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/bin/javac'
+        options.compilerArgs << "-XDignore.symbol.file=true"
+    }
 
 
     repositories {
@@ -42,11 +48,7 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "kotlin"
-    compileJava {
-       options.fork = true
-       // options.forkOptions.executable = 'javac'
-       // options.compilerArgs << "-XDignore.symbol.file=true"
-    }
+   
 
     dependencies {
         compile project(":core")

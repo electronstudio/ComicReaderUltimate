@@ -1,16 +1,22 @@
 package uk.co.electronstudio.desktop;
 
 
+
+import com.apple.eawt.AboutHandler;
+import com.apple.eawt.AppEvent;
+import com.apple.eawt.Application;
+import com.apple.eawt.OpenFilesHandler;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import net.spookygames.gdx.nativefilechooser.desktop.DesktopFileChooser;
+import org.lwjgl.Sys;
 import uk.co.electronstudio.App;
 
-import java.awt.Desktop;
-import java.awt.desktop.AboutEvent;
-import java.awt.desktop.AboutHandler;
-import java.awt.desktop.OpenFilesEvent;
-import java.awt.desktop.OpenFilesHandler;
+//import java.awt.Desktop;
+//import java.awt.desktop.AboutEvent;
+//import java.awt.desktop.AboutHandler;
+//import java.awt.desktop.OpenFilesEvent;
+//import java.awt.desktop.OpenFilesHandler;
 import java.io.File;
 import java.util.List;
 
@@ -26,9 +32,36 @@ public class DesktopLauncher {
 
         App app = new App(new DesktopFileChooser(), args);
 
-        Desktop.getDesktop().setOpenFileHandler(new OpenFilesHandler() {
+//        Desktop.getDesktop().setOpenFileHandler(new OpenFilesHandler() {
+//            @Override
+//            public void openFiles(OpenFilesEvent ofe) {
+//                List<File> files = ofe.getFiles();
+//                if (files != null && files.size() > 0) {
+//                    System.out.println("file handler "+ files.get(0));
+//                    app.viewScreen.loadComic(files.get(0).getAbsolutePath());
+//                }
+//            }
+//        });
+//
+//        Desktop.getDesktop().setAboutHandler(new AboutHandler() {
+//            @Override
+//            public void handleAbout(AboutEvent e) {
+//                System.out.println("about");
+//            }
+//        });
+
+
+        Application.getApplication().setAboutHandler(new AboutHandler() {
             @Override
-            public void openFiles(OpenFilesEvent ofe) {
+            public void handleAbout(AppEvent.AboutEvent aboutEvent) {
+                System.out.println("about");
+            }
+        });
+
+        Application.getApplication().setOpenFileHandler(new OpenFilesHandler() {
+            @Override
+            public void openFiles(AppEvent.OpenFilesEvent ofe) {
+                System.exit(0);
                 List<File> files = ofe.getFiles();
                 if (files != null && files.size() > 0) {
                     System.out.println("file handler "+ files.get(0));
@@ -37,24 +70,6 @@ public class DesktopLauncher {
             }
         });
 
-       // var testfile2 = "/Volumes/Home/rich/Documents/Vuze Downloads/Buffy Comics Season 9 complete/Buffy the Vampire Slayer Season 9 08.cbz";
-
-        Desktop.getDesktop().setAboutHandler(new AboutHandler() {
-            @Override
-            public void handleAbout(AboutEvent e) {
-                System.out.println("about");
-
-            }
-        });
-
-
-//        Application.getApplication().setAboutHandler(new AboutHandler() {
-//            @Override
-//            public void handleAbout(AppEvent.AboutEvent aboutEvent) {
-//                System.out.println("about");
-//            }
-//        });
-//
 		new LwjglApplication(app, config);
 
 

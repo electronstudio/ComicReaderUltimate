@@ -1,0 +1,12 @@
+~/Downloads/jdk-13.jdk/Contents/Home/bin/jpackage create-image \
+    --force \
+        --verbose \
+        --input desktop/build/libs \
+        --output desktop/build/libs \
+        --name ComicReaderUltimate \
+        --mac-bundle-name ComicReaderUltimate \
+        --main-jar desktop-1.0.jar  \
+        --class uk.co.electronstudio.desktop.DesktopLauncher \
+        --mac-bundle-identifier uk.co.electronstudio.CRU \
+        --mac-sign
+        --mac-signing-key-user-name
