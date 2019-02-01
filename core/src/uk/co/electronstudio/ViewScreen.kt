@@ -42,6 +42,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     var dialogs = GDXDialogsSystem.install()
 
     private var comic: Comic? = null
+    private var totalPageHeights = 0f
 
     private var scrollDown = false
     private var scrollUp = false
@@ -120,6 +121,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     }
 
 
+
     fun loadComic(filename: String) {
         try {
             println("loadcomic $filename")
@@ -132,6 +134,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
                 c.loadPixmaps()
                 val x = ((System.nanoTime() - time) / 1000000f).toInt()
                 println("loaded all pixmaps from archive in $x ms")
+                totalPageHeights = calculateTotalPageHeights(c)
             }
 
             comic = c
@@ -157,6 +160,10 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
             bDialog.build().show()
         }
+    }
+
+    private fun calculateTotalPageHeights(c: Comic): Float {
+        return c.pages.map { it.height() }.sum()
     }
 
     override fun render(delta: Float) {
@@ -188,7 +195,16 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
             realCam.position.y=Math.max( realCam.position.y, Gdx.graphics.height*realCam.zoom/2f)
             goalCam.position.y=Math.max( goalCam.position.y, Gdx.graphics.height*goalCam.zoom/2f)
 
-            //fixme add up all the page heights to find bottom scroll limit
+            //add up all the page heights to find bottom scroll limit
+            //fixme tidy
+            //fixme work for double page mode
+            if(continuousScroll && totalPageHeights>0f) {
+                realCam.position.y =
+                    Math.min(realCam.position.y, totalPageHeights - (Gdx.graphics.height / 2f) * realCam.zoom)
+                goalCam.position.y =
+                    Math.min(goalCam.position.y, totalPageHeights - (Gdx.graphics.height / 2f) * goalCam.zoom)
+            }
+
 
             if(!continuousScroll){
                 val pageHeight = it.pages[currentPage].height()
@@ -236,7 +252,11 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
         batch.end()
 
 
-
+        textBatch.begin()
+        font.setColor(Color.RED)
+        font.draw(textBatch, "${currentPage+1}/${comic?.pages?.size} ${realCam.position.y} ${realCam.zoom}", 0f, 11f);
+        font.setColor(Color.WHITE)
+        textBatch.end()
 
 
     }
@@ -326,6 +346,37 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
             if (goalCam.position.y < realCam.position.y) realCam.position.y = goalCam.position.y
             App.pleaseRender()
         }
+        if(continuousScroll){
+            currentPage=convertScrollAmountToPageNumber(realCam.position.y)
+
+
+          //  currentPage=(realCam.position.y /
+         //   ((comic?.pages?.get(currentPage)?.height() ?: 0f) - (Gdx.graphics.height / 2f) * realCam.zoom)
+         //           ).toInt()
+        }
+    }
+
+    private fun convertScrollAmountToPageNumber(scroll: Float): Int {
+        var y = (Gdx.graphics.height/2f) * goalCam.zoom
+        var i=0
+        comic?.let {
+            for(page in it.pages){
+                y=y+page.height()
+                if(y>scroll) break
+                i++
+            }
+        }
+        return i
+    }
+
+    private fun convertPageNumberToScrollAmount(n: Int): Float {
+        var h=(Gdx.graphics.height/2f) * goalCam.zoom
+        for(i in 0 until n){
+            comic?.let {
+                h=h+it.pages[i].height()
+            }
+        }
+        return h
     }
 
     override fun dispose() {
@@ -415,7 +466,13 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
             Input.Keys.O -> requestFile()
             Input.Keys.SPACE -> advance()
             Input.Keys.B -> comic?.swapFilter()
-            Input.Keys.C -> continuousScroll = !continuousScroll
+            Input.Keys.C -> {
+                continuousScroll = !continuousScroll
+                if(continuousScroll){
+                    goalCam.position.y=convertPageNumberToScrollAmount(currentPage)
+                    realCam.position.y=goalCam.position.y
+                }
+            }
             Input.Keys.Z -> zoomToFit()
             Input.Keys.R -> oneOneZoom()
             Input.Keys.HOME -> firstPage()
@@ -463,6 +520,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     fun nextPage(){
         comic?.let {
             if(it.pages.lastIndex == currentPage && quitAtEnd){
+                prefs.remove("lastFile")
                 quit()
             }
         }

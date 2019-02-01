@@ -17,6 +17,7 @@ abstract class Comic(val filename: String) {
      val imageRegex = ".*(jpg|png|bmp|jpeg)".toRegex(RegexOption.IGNORE_CASE)
 
 
+
     abstract fun loadPixmaps()
     private var loaded=0
 
