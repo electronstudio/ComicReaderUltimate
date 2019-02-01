@@ -15,14 +15,31 @@ import com.badlogic.gdx.math.MathUtils
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
+import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
+import de.tomgrill.gdxdialogs.core.GDXDialogs
+import de.tomgrill.gdxdialogs.core.listener.ButtonClickListener
+import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
 
-class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProcessor {
+
+
+
+
+/**
+ * zooming is jerky - add momentum?
+ * two cameras is redundant.  encapsulate them in our own camera class?  or just get rid of goalcam altogether
+ * do people want to hold down zoom/cursors movement? certainly in single page view you only ever tap it.
+ */
+
+class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : ScreenAdapter(), InputProcessor {
 
     private var batch: SpriteBatch = SpriteBatch() //5000, createDefaultShaderGL3())
     private var realCam: OrthographicCamera = OrthographicCamera()
     private var goalCam: OrthographicCamera = OrthographicCamera()
     val font =  BitmapFont()
     val textBatch = SpriteBatch()
+    var prefs = Gdx.app.getPreferences("uk.co.electronstudio.comicreaderultimate")
+
+    var dialogs = GDXDialogsSystem.install()
 
     private var comic: Comic? = null
 
@@ -36,11 +53,13 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     private var doublePage = false
     private var continuousScroll = false
     private val background: Color = Color.BLACK
-    private val zoomSpeed = 0.04f // 0.01 - 0.10
+    private val zoomSpeed = 0.1f // 0.01 - 0.10
     private val scrollSpeed = 60f
     private val zoomSens = 1.1f
-    private val mouseSens = 2f
+    private val mouseSens = 4f
     private val mouseSmoothing = false
+    private val quitAtEnd = true
+    private val spaceBarAdvanceAmount = 0.5f
 
 
     init {
@@ -87,6 +106,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
         app.fileChooser.chooseFile(conf, object : NativeFileChooserCallback {
             override fun onFileChosen(file: FileHandle) {
                 loadComic(file.path())
+                currentPage = 0
             }
 
             override fun onCancellation() {
@@ -101,21 +121,42 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
 
 
     fun loadComic(filename: String) {
-        println("loadcomic $filename")
+        try {
+            println("loadcomic $filename")
 
-        val c = Comic.factory(filename)
+            val c = Comic.factory(filename)
 
-        thread(start = true) {
-            println("starting pixmap load")
-            var time = System.nanoTime()
-            c.loadPixmaps()
-            val x = ((System.nanoTime() - time) / 1000000f).toInt()
-            println("loaded all pixmaps from archive in $x ms")
+            thread(start = true) {
+                println("starting pixmap load")
+                var time = System.nanoTime()
+                c.loadPixmaps()
+                val x = ((System.nanoTime() - time) / 1000000f).toInt()
+                println("loaded all pixmaps from archive in $x ms")
+            }
+
+            comic = c
+
+            moveCameraToStartPosition()
+            prefs.putString("lastFile", filename)
+            prefs.flush()
+        }catch (e: Throwable){
+            e.printStackTrace()
+            val bDialog = dialogs.newDialog(GDXButtonDialog::class.java)
+            bDialog.setTitle(e.message)
+            bDialog.setMessage(e.stackTrace.joinToString(separator = "\n") {it.toString()})
+
+            bDialog.setClickListener {
+                bDialog.dismiss()
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+                Gdx.input.isCursorCatched = true
+            }
+
+            bDialog.addButton("OK")
+            Gdx.input.isCursorCatched = false
+            Gdx.graphics.setWindowedMode(10, 10)
+
+            bDialog.build().show()
         }
-
-        comic = c
-        currentPage=0
-        moveCameraToStartPosition()
     }
 
     override fun render(delta: Float) {
@@ -200,7 +241,7 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
 
     }
 
-    var currentPage=0
+
 
     fun renderSingle(comic: Comic, batch: SpriteBatch) {
         val page=comic.pages.get(currentPage)
@@ -357,10 +398,10 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.ESCAPE -> {
-                System.exit(0)
+                quit()
             }
             Input.Keys.Q -> {
-                System.exit(0)
+                quit()
             }
             Input.Keys.DOWN -> scrollDown = true
             Input.Keys.UP -> scrollUp = true
@@ -375,18 +416,70 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
             Input.Keys.SPACE -> advance()
             Input.Keys.B -> comic?.swapFilter()
             Input.Keys.C -> continuousScroll = !continuousScroll
+            Input.Keys.Z -> zoomToFit()
+            Input.Keys.R -> oneOneZoom()
+            Input.Keys.HOME -> firstPage()
+            Input.Keys.END -> lastPage()
         }
         App.pleaseRender()
         return true
     }
 
-    fun nextPage(){
-        currentPage = MathUtils.clamp(currentPage+1, 0, comic?.pages?.lastIndex ?: 0)
+    private fun quit() {
+        prefs.putInteger("currentPage", currentPage)
+        prefs.flush()
+        System.exit(0)
+    }
+
+    var oldZoom=1f
+
+    private fun zoomToFit() {
+        oldZoom=goalCam.zoom
+        comic?.let {
+            goalCam.zoom = it.pages[currentPage].height()/Gdx.graphics.height
+        }
+    }
+
+    private fun restoreOldZoom(){
+        goalCam.zoom = oldZoom
+    }
+
+    private fun oneOneZoom() {
+        goalCam.zoom=1f
+    }
+
+    fun firstPage(){
+        currentPage=0
         moveCameraToStartPosition()
     }
-    fun prevPage(){
-        currentPage = MathUtils.clamp(currentPage-1, 0, comic?.pages?.lastIndex ?: 0)
+
+    fun lastPage(){
+        comic?.let {
+            currentPage=it.pages.lastIndex
+        }
         moveCameraToStartPosition()
+    }
+
+    fun nextPage(){
+        comic?.let {
+            if(it.pages.lastIndex == currentPage && quitAtEnd){
+                quit()
+            }
+        }
+        if(continuousScroll){
+            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * 1f )
+        }else {
+            currentPage = MathUtils.clamp(currentPage + 1, 0, comic?.pages?.lastIndex ?: 0)
+            moveCameraToStartPosition()
+        }
+    }
+    fun prevPage(){
+        if(continuousScroll){
+            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * -1f )
+        }else {
+            currentPage = MathUtils.clamp(currentPage - 1, 0, comic?.pages?.lastIndex ?: 0)
+            moveCameraToStartPosition()
+        }
     }
 
     fun moveCameraToStartPosition(){
@@ -397,61 +490,32 @@ class ViewScreen(val app: App, fileToLoad: String?) : ScreenAdapter(), InputProc
     }
 
     fun advance(){
-        if(goalCam.position.y >= ((comic?.pages?.get(currentPage)?.height() ?: 0f) - (Gdx.graphics.height / 2f) * realCam.zoom)-1){
+        if(!continuousScroll && goalCam.position.y >= ((comic?.pages?.get(currentPage)?.height() ?: 0f) - (Gdx.graphics.height / 2f) * realCam.zoom)-1){
             nextPage()
         }else{
-            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * 1f )//goalCam.zoom)
+            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * spaceBarAdvanceAmount )//goalCam.zoom)
         }
         App.pleaseRender()
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        advance()
+        when(button){
+            0->advance()
+            1->zoomToFit()
+        }
+        App.pleaseRender()
         return true
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        when(button){
+            1->restoreOldZoom()
+        }
         App.pleaseRender()
         return true
     }
 
 
-    fun createDefaultShaderGL3(): ShaderProgram {
-        val vertexShader = ("in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" + //
-                "in vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" + //
-                "in vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" + //
-                "uniform mat4 u_projTrans;\n" + //
-                "out vec4 v_color;\n" + //
-                "out vec2 v_texCoords;\n" + //
-                "\n" + //
-                "void main()\n" + //
-                "{\n" + //
-                "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" + //
-                "   v_color.a = v_color.a * (255.0/254.0);\n" + //
-                "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" + //
-                "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" + //
-                "}\n")
-        val fragmentShader = ("#ifdef GL_ES\n" + //
-                "#define LOWP lowp\n" + //
-                "precision mediump float;\n" + //
-                "#else\n" + //
-                "#define LOWP \n" + //
-                "#endif\n" + //
-                "in LOWP vec4 v_color;\n" + //
-                "in vec2 v_texCoords;\n" + //
-                "out vec4 fragColor;\n" + //
-                "uniform sampler2D u_texture;\n" + //
-                "void main()\n" + //
-                "{\n" + //
-                "  fragColor = v_color * texture(u_texture, v_texCoords);\n" + //
-                "}")
-
-        ShaderProgram.prependFragmentCode = "#version 330\n"
-        ShaderProgram.prependVertexCode = "#version 330\n"
-        val shader = ShaderProgram(vertexShader, fragmentShader)
-        if (shader.isCompiled == false) throw IllegalArgumentException("Error compiling shader: " + shader.log)
-        return shader
-    }
 
 
 }

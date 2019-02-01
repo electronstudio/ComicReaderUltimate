@@ -55,6 +55,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        compile "de.tomgrill.gdxdialogs:gdx-dialogs-desktop:1.3.0"
     }
 
 
@@ -71,6 +72,7 @@ project(":core") {
         compile "org.apache.tika:tika-core:1.12"
         compile "io.github.libktx:ktx-scene2d:1.9.6-b7"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4"
+        compile "de.tomgrill.gdxdialogs:gdx-dialogs-core:1.3.0"
     }
 }
 
