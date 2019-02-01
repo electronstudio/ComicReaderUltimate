@@ -57,10 +57,11 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     private val zoomSpeed = 0.1f // 0.01 - 0.10
     private val scrollSpeed = 60f
     private val zoomSens = 1.1f
-    private val mouseSens = 4f
+    private val mouseSens = 2f
     private val mouseSmoothing = false
     private val quitAtEnd = true
     private val spaceBarAdvanceAmount = 0.5f
+    private val mouseAcceleration = 1.5f // 1 to 1.99
 
 
     init {
@@ -169,8 +170,11 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     override fun render(delta: Float) {
         println("render")
         Gdx.graphics.isContinuousRendering = false
-        comic?.loadPreviewTexturesFromPixmaps()
-        comic?.loadUnloadedTexturesFromPixmaps()
+        comic?.let {
+            it.loadPreviewTexturesFromPixmaps()
+            it.loadUnloadedTexturesFromPixmaps()
+            currentPage=MathUtils.clamp(currentPage, 0, it.pages.lastIndex)
+        }
         processKeyEvents()
         moveRealCamTowardsGoalCam()
         constrainScrolling()
@@ -387,8 +391,18 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     val mouseHistoryY = ArrayList<Float>()
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        val x = Gdx.input.deltaX.toFloat() * realCam.zoom * mouseSens
-        val y = Gdx.input.deltaY.toFloat() * realCam.zoom * mouseSens
+        val mx = Gdx.input.deltaX.toDouble()
+        val my = Gdx.input.deltaY.toDouble()
+        val x = MathUtils.clamp((Math.pow(Math.abs(mx), mouseAcceleration.toDouble()) * realCam.zoom * mouseSens).toFloat() * if(mx>0f) 1f else -1f, -500f, 500f)
+        //MathUtils.clamp((Math.pow(mx, mouseAcceleration.toDouble()) * realCam.zoom * mouseSens).toFloat(), -5f, 5f)
+        val y = MathUtils.clamp((Math.pow(Math.abs(my), mouseAcceleration.toDouble()) * realCam.zoom * mouseSens).toFloat() * if(my>0f) 1f else -1f, -500f, 500f)
+
+
+        // * (if (my<0) 1 else -1)
+
+//        val linearity=1f
+//        val x = ((1f/(0+linearity)) * mx * (Math.abs(mx)*linearity)).toFloat();
+//        val y = ((1f/(0+linearity)) * my * (Math.abs(my)*linearity)).toFloat();
 
         if(mouseSmoothing) {
             println("mouse moved y $y")
