@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class RarComicThreaded(filename: String) : Comic(filename) {
     override val pages: ArrayList<Page>
 
-    val numThreads = Runtime.getRuntime().availableProcessors() - 1
     val queue = ConcurrentLinkedQueue<Int>()
 
     init {
@@ -65,11 +64,7 @@ class RarComicThreaded(filename: String) : Comic(filename) {
             .filter { imageRegex.matches(it.fileNameString) }
     }
 
-    fun printFreeMemory(){
-        val allocatedMemory      = (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory());
-        val presumableFreeMemory = Runtime.getRuntime().maxMemory() - allocatedMemory;
-        println("USED RAM: ${allocatedMemory/1000000} FREE RAM: ${presumableFreeMemory/1000000}")
-    }
+
 }
 
 class RarWorker(val comic: RarComicThreaded) : Runnable {
@@ -87,7 +82,7 @@ class RarWorker(val comic: RarComicThreaded) : Runnable {
         var i = comic.queue.poll()
         while (i != null) {
 
-            println("header number $i of ${headers.size}")
+           // println("header number $i of ${headers.size}")
             val os = ByteArrayOutputStream()
 
             try {
@@ -104,6 +99,7 @@ class RarWorker(val comic: RarComicThreaded) : Runnable {
             Gdx.graphics.requestRendering()
             i = comic.queue.poll()
         }
+        rarFile.close()
     }
 }
 

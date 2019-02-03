@@ -12,9 +12,9 @@ class ZipComicThreaded(filename: String):Comic(filename) {
     override val pages = ArrayList<Page>()
     val zipFile = ZipFile(filename)
 
-    val threads = Runtime.getRuntime().availableProcessors()-1
 
-    private val es = Executors.newFixedThreadPool(threads)
+
+    private val es = Executors.newFixedThreadPool(numThreads)
 
     init {
             zipFile.entries().toList().filter { imageRegex.matches(it.name) }.forEach {
@@ -23,7 +23,7 @@ class ZipComicThreaded(filename: String):Comic(filename) {
     }
 
     override fun loadPixmaps() {
-        println("zip open, $threads threads")
+        println("zip open, $numThreads threads")
         zipFile.entries().toList().filter { imageRegex.matches(it.name) }.forEachIndexed() {i, it ->
                 println("zip entry")
                 es.submit {
@@ -43,6 +43,7 @@ class ZipComicThreaded(filename: String):Comic(filename) {
             println("waiting for termination")
             es.shutdown()
             es.awaitTermination(60, TimeUnit.SECONDS)
+            zipFile.close()
 
         }
 

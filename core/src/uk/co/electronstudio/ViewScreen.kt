@@ -28,6 +28,8 @@ import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
  * zooming is jerky - add momentum?
  * two cameras is redundant.  encapsulate them in our own camera class?  or just get rid of goalcam altogether
  * do people want to hold down zoom/cursors movement? certainly in single page view you only ever tap it.
+ * i vol 2 has an extra wide page, doesnt look good in continuous mode
+ * in single page, zoom out then back again changes position
  */
 
 class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : ScreenAdapter(), InputProcessor {
@@ -57,11 +59,11 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     private val zoomSpeed = 0.1f // 0.01 - 0.10
     private val scrollSpeed = 60f
     private val zoomSens = 1.1f
-    private val mouseSens = 2f
+    private val mouseSens = 5f
     private val mouseSmoothing = false
     private val quitAtEnd = true
     private val spaceBarAdvanceAmount = 0.5f
-    private val mouseAcceleration = 1.5f // 1 to 1.99
+    private val mouseAcceleration = 1.1f // 1 to 1.99
 
 
     init {
@@ -138,6 +140,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
                 totalPageHeights = calculateTotalPageHeights(c)
             }
 
+            comic?.dispose()
             comic = c
 
             moveCameraToStartPosition()
@@ -168,7 +171,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     }
 
     override fun render(delta: Float) {
-        println("render")
+      //  println("render")
         Gdx.graphics.isContinuousRendering = false
         comic?.let {
             it.loadPreviewTexturesFromPixmaps()
@@ -385,6 +388,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
     override fun dispose() {
         batch.dispose()
+        comic?.dispose()
     }
 
     val mouseHistoryX = ArrayList<Float>()

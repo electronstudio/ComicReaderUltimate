@@ -14,8 +14,8 @@ import java.util.concurrent.CopyOnWriteArrayList
 abstract class Comic(val filename: String) {
      abstract val pages: List<Page>
     var filter = Texture.TextureFilter.Linear
-     val imageRegex = ".*(jpg|png|bmp|jpeg)".toRegex(RegexOption.IGNORE_CASE)
 
+    val numThreads = Math.max(1,Runtime.getRuntime().availableProcessors()-1)
 
 
     abstract fun loadPixmaps()
@@ -54,7 +54,7 @@ abstract class Comic(val filename: String) {
         }
         if(count>0){
             val x = ((System.nanoTime() - time) / 1000000f).toInt()
-            println("Loaded $count preview textures in $x ms")
+          //  println("Loaded $count preview textures in $x ms")
         }
 
 //        val buffer =  ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer()
@@ -83,9 +83,29 @@ abstract class Comic(val filename: String) {
         }
     }
 
+    fun dispose() {
+        println("dispose")
+        printFreeMemory()
+        pages.forEach(){
+            it.pixmap?.dispose()
+            it.previewTexture?.texture?.dispose()
+            it.texture?.texture?.dispose()
+        }
+        System.gc()
+        printFreeMemory()
+    }
 
 
     companion object {
+
+        val imageRegex = ".*(jpg|png|bmp|jpeg)".toRegex(RegexOption.IGNORE_CASE)
+
+        fun printFreeMemory(){
+            val allocatedMemory      = (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory());
+            val presumableFreeMemory = Runtime.getRuntime().maxMemory() - allocatedMemory;
+            println("USED RAM: ${allocatedMemory/1000000} FREE RAM: ${presumableFreeMemory/1000000}")
+        }
+
         private val tika = Tika()
         fun factory(filename: String):Comic{
             if(File(filename).isDirectory) return JpgComic(filename)

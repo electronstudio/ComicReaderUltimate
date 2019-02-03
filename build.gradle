@@ -37,6 +37,9 @@ allprojects {
         options.compilerArgs << "-XDignore.symbol.file=true"
     }
 
+    tasks.withType(JavaExec) {
+        jvmArgs = ['-Xms100m', '-Xmx4000m']
+    }
 
     repositories {
         mavenLocal()
