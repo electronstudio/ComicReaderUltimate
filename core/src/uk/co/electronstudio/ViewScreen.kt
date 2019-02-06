@@ -30,6 +30,8 @@ import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
  * do people want to hold down zoom/cursors movement? certainly in single page view you only ever tap it.
  * i vol 2 has an extra wide page, doesnt look good in continuous mode
  * in single page, zoom out then back again changes position
+ * priroty should be given to loading current page if its not the first one
+ * double page non continuous should advance two pages, not one
  */
 
 class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : ScreenAdapter(), InputProcessor {

@@ -39,7 +39,7 @@ class App(val fileChooser: NativeFileChooser, val args: Array<String>) : Game() 
         }
         viewScreen = ViewScreen(this, fileToOpen, startPage)
      //   viewScreen = ViewScreen(this, "/Volumes/Home/rich/test.cbz")
-       // menuScreen = MenuScreen(this)
+        menuScreen = MenuScreen(this)
         screen=viewScreen
     }
 

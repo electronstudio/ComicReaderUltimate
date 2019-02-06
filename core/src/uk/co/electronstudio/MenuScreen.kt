@@ -121,8 +121,8 @@ class MenuScreen(val app: App): ScreenAdapter() {
       //  window2.add(chooser)
       //  window2.pack()
 
-        //chooser.setFillParent(true)
-       window2.setFillParent(true)
+        chooser.setFillParent(true)
+       window.setFillParent(true)
         table!!.setFillParent(true)
         stage!!.addActor(window)
 
@@ -141,40 +141,11 @@ class MenuScreen(val app: App): ScreenAdapter() {
         stage?.act(Gdx.graphics.deltaTime)
         stage?.draw()
         if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)){
-            n()
+            System.exit(0)
         }
 
     }
 
-    private fun n() {
-        val conf = NativeFileChooserConfiguration()
-
-// Starting from user's dir
-        conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
-
-// Filter out all files which do not have the .ogg extension and are not of an audio MIME type - belt and braces
- //       conf.mimeFilter = "audio/*"
- //       conf.nameFilter = FilenameFilter { dir, name -> name.endsWith("ogg") }
-
-// Add a nice title
-        conf.title = "Choose audio file"
-
-
-
-        app.fileChooser.chooseFile(conf, object : NativeFileChooserCallback {
-            override fun onFileChosen(file: FileHandle) {
-                // Do stuff with file, yay!
-            }
-
-            override fun onCancellation() {
-                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
-            }
-
-            override fun onError(exception: Exception) {
-                // Handle error (hint: use exception type)
-            }
-        })
-    }
 
     override fun dispose() {
         stage!!.dispose()
