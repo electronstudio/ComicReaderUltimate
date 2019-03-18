@@ -28,10 +28,11 @@ import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
  * zooming is jerky - add momentum?
  * two cameras is redundant.  encapsulate them in our own camera class?  or just get rid of goalcam altogether
  * do people want to hold down zoom/cursors movement? certainly in single page view you only ever tap it.
- * i vol 2 has an extra wide page, doesnt look good in continuous mode
- * in single page, zoom out then back again changes position
+ * FIXED? i vol 2 has an extra wide page, doesnt look good in continuous mode
+ * FIXED? in single page, zoom out then back again changes position
  * priroty should be given to loading current page if its not the first one
  * double page non continuous should advance two pages, not one
+ * remember page for all previously opened comics, not just last one?
  */
 
 class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : ScreenAdapter(), InputProcessor {
@@ -305,7 +306,9 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
                     0f,
                     pixmap.height.toFloat())
             ) {
-                batch.draw(tex, x, y, page.width(), page.height())//pixmap.width.toFloat(), pixmap.height.toFloat())
+                val xOffset = (comic.pages[0].width()-page.width())/2  //fixme: this is wrong for doulble page
+                                                                        //fixme: also the contraints are based on first page not current page
+                batch.draw(tex, x+xOffset, y, page.width(), page.height())//pixmap.width.toFloat(), pixmap.height.toFloat())
             }
             x += pixmap.width
             col++
@@ -509,9 +512,13 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     }
 
     var oldZoom=1f
+    var oldX=0f
+    var oldY=0f
 
     private fun zoomToFit() {
         oldZoom=goalCam.zoom
+        oldX=goalCam.position.x
+        oldY=goalCam.position.y
         comic?.let {
             goalCam.zoom = it.pages[currentPage].height()/Gdx.graphics.height
         }
@@ -519,6 +526,8 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
     private fun restoreOldZoom(){
         goalCam.zoom = oldZoom
+        goalCam.position.x=oldX
+        goalCam.position.y=oldY
     }
 
     private fun oneOneZoom() {
@@ -561,10 +570,10 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     }
 
     fun moveCameraToStartPosition(){
-        goalCam.position.x=Gdx.graphics.width/2f
-        realCam.position.x=Gdx.graphics.width/2f
-        goalCam.position.y=Gdx.graphics.height/2f
-        realCam.position.y=Gdx.graphics.height/2f
+        goalCam.position.x=(Gdx.graphics.width/2f)*goalCam.zoom
+        realCam.position.x=(Gdx.graphics.width/2f)*realCam.zoom
+        goalCam.position.y=(Gdx.graphics.height/2f)*goalCam.zoom
+        realCam.position.y=(Gdx.graphics.height/2f)*realCam.zoom
     }
 
     fun advance(){

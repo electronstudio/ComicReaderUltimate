@@ -1,5 +1,7 @@
 ## Java
 
+.idea/
+
 *.class
 *.war
 *.ear
