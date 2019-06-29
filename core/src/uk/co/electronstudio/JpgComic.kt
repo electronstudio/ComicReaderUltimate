@@ -21,6 +21,7 @@ class JpgComic(filename: String):Comic(filename) {
         println("dir $dir")
         dir.listFiles().filter {  imageRegex.matches(it.name) }.forEach {
             pages.add(Page(null))
+            println("added page $it")
         }
     }
 

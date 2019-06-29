@@ -36,67 +36,67 @@ task dist(type: Jar) {
 
 dist.dependsOn classes
 
-apply plugin: 'javafx-gradle-plugin'
-
-
-jfx {
-    // minimal requirement for jfxJar-task
-    mainClass = 'uk.co.electronstudio.desktop.DesktopLauncher'
-    appName = "CRU"
-    verbose = true
-
-    addPackagerJar = false
-    nativeReleaseVersion = "$version"
-    // minimal requirement for jfxNative-task
-    vendor = 'ElectronStudio'
-
-    manifestAttributes = ['Implementation-Version': version]
-
-    //  alternativePathToJarFile = 'build/libs/desktop-0.0.1.jar'
-    //    bundler='windows.app'
-    bundler='mac.app'
-    //bundler='mac.app'
-
-    copyAdditionalAppResourcesToJar = true
-    //  additionalBundlerResources = '../android/assets/'
-    additionalAppResources = '../core/assets/'
-
-    bundleArguments = [
-            systemWide: true
-    ]
-
-    fileAssociations = [
+//apply plugin: 'javafx-gradle-plugin'
+//
+//
+//jfx {
+//    // minimal requirement for jfxJar-task
+//    mainClass = 'uk.co.electronstudio.desktop.DesktopLauncher'
+//    appName = "CRU"
+//    verbose = true
+//
+//    addPackagerJar = false
+//    nativeReleaseVersion = "$version"
+//    // minimal requirement for jfxNative-task
+//    vendor = 'ElectronStudio'
+//
+//    manifestAttributes = ['Implementation-Version': version]
+//
+//    //  alternativePathToJarFile = 'build/libs/desktop-0.0.1.jar'
+//    //    bundler='windows.app'
+//    bundler='mac.app'
+//    //bundler='mac.app'
+//
+//    copyAdditionalAppResourcesToJar = true
+//    //  additionalBundlerResources = '../android/assets/'
+//    additionalAppResources = '../core/assets/'
+//
+//    bundleArguments = [
+//            systemWide: true
+//    ]
+//
+//    fileAssociations = [
+////            [
+////                    description: 'cbz',
+////                    extensions: 'cbz',
+////                    contentType: 'application/vnd.comicbook+zip'
+////            ]
+//            //,
 //            [
-//                    description: 'cbz',
-//                    extensions: 'cbz',
-//                    contentType: 'application/vnd.comicbook+zip'
-//            ]
-            //,
-            [
-                    description: 'cbz2',
-//                    extensions: 'cbz',
-                    contentType: 'application/zip'
-            ],
-[
-        description: 'harry',
-                    extensions: 'cbz',
-  //      contentType: 'application/zip'
-],
-//            [
-//                    description: 'cbr',
-//                    extensions: 'cbr',
-//                    contentType: 'application/x-cbr'
+//                    description: 'cbz2',
+////                    extensions: 'cbz',
+//                    contentType: 'application/zip'
 //            ],
-//            [
-//                    description: 'cbr2',
-//                    extensions: 'cbr',
-//                    contentType: 'application/vnd.rar'
-//            ],
-//            [
-//                    description: 'cbr3',
-//                    extensions: 'cbr',
-//                    contentType: 'application/x-rar-compressed'
-//            ]
-    ]
-}
+//[
+//        description: 'harry',
+//                    extensions: 'cbz',
+//  //      contentType: 'application/zip'
+//],
+////            [
+////                    description: 'cbr',
+////                    extensions: 'cbr',
+////                    contentType: 'application/x-cbr'
+////            ],
+////            [
+////                    description: 'cbr2',
+////                    extensions: 'cbr',
+////                    contentType: 'application/vnd.rar'
+////            ],
+////            [
+////                    description: 'cbr3',
+////                    extensions: 'cbr',
+////                    contentType: 'application/x-rar-compressed'
+////            ]
+//    ]
+//}
 

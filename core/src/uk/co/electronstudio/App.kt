@@ -4,14 +4,17 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import net.spookygames.gdx.nativefilechooser.NativeFileChooser
 import java.io.File
+import java.util.logging.Logger
 
 
-class App(val fileChooser: NativeFileChooser, val args: Array<String>) : Game() {
+class App(val fileChooser: NativeFileChooser,
+          val args: Array<String>, val log: Logger) : Game() {
 
     lateinit var viewScreen: ViewScreen
     lateinit var menuScreen: MenuScreen
 
 
+    var pleaseLoad: String? = null
 
     override fun create() {
 
@@ -37,10 +40,20 @@ class App(val fileChooser: NativeFileChooser, val args: Array<String>) : Game() 
             fileToOpen = args[0]
             startPage=0
         }
+        if(pleaseLoad!=null){
+            fileToOpen = pleaseLoad
+        }
+        log.info("creating viewscreen, pleaseLoad is $pleaseLoad")
         viewScreen = ViewScreen(this, fileToOpen, startPage)
      //   viewScreen = ViewScreen(this, "/Volumes/Home/rich/test.cbz")
         menuScreen = MenuScreen(this)
         screen=viewScreen
+    }
+
+    fun requestLoad(fileToLoad: String) {
+        log.info("requestLoad $fileToLoad")
+        pleaseLoad=fileToLoad
+
     }
 
     companion object {

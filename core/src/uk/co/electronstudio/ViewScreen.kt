@@ -19,9 +19,7 @@ import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
 import de.tomgrill.gdxdialogs.core.GDXDialogs
 import de.tomgrill.gdxdialogs.core.listener.ButtonClickListener
 import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
-
-
-
+import java.util.logging.Level
 
 
 /**
@@ -80,7 +78,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     }
 
     override fun resize(width: Int, height: Int) {
-        println("resize")
+        app.log.info("resize")
         super.resize(width, height)
         realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
@@ -91,12 +89,12 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
         goalCam.update()
         Gdx.input.inputProcessor = this
 
-        println("CAM X "+realCam.position.x)
-        println("CAM Y "+realCam.position.y)
+        app.log.info("CAM X "+realCam.position.x)
+        app.log.info("CAM Y "+realCam.position.y)
     }
 
     override fun show() {
-        println("show")
+        app.log.info("show")
         super.show()
         Gdx.input.inputProcessor = this
     }
@@ -130,16 +128,16 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
     fun loadComic(filename: String) {
         try {
-            println("loadcomic $filename")
+            app.log.info("loadcomic $filename")
 
             val c = Comic.factory(filename)
 
             thread(start = true) {
-                println("starting pixmap load")
+                app.log.info("starting pixmap load")
                 var time = System.nanoTime()
                 c.loadPixmaps()
                 val x = ((System.nanoTime() - time) / 1000000f).toInt()
-                println("loaded all pixmaps from archive in $x ms")
+                app.log.info("loaded all pixmaps from archive in $x ms")
                 totalPageHeights = calculateTotalPageHeights(c)
             }
 
@@ -150,6 +148,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
             prefs.putString("lastFile", filename)
             prefs.flush()
         }catch (e: Throwable){
+            app.log.log(Level.SEVERE, "error loading comic", e)
             e.printStackTrace()
             val bDialog = dialogs.newDialog(GDXButtonDialog::class.java)
             bDialog.setTitle(e.message)
@@ -174,7 +173,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     }
 
     override fun render(delta: Float) {
-      //  println("render")
+      //  app.log.info("render")
         Gdx.graphics.isContinuousRendering = false
         comic?.let {
             it.loadPreviewTexturesFromPixmaps()
@@ -414,7 +413,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 //        val y = ((1f/(0+linearity)) * my * (Math.abs(my)*linearity)).toFloat();
 
         if(mouseSmoothing) {
-            println("mouse moved y $y")
+            app.log.info("mouse moved y $y")
             mouseHistoryX.add(x)
             mouseHistoryY.add(y)
             if(mouseHistoryX.size>10) mouseHistoryX.removeAt(0)
@@ -436,7 +435,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     }
 
     override fun scrolled(amount: Int): Boolean {
-        println(amount)
+        app.log.info("scrolled $amount")
 
         if (amount > 0) {
             goalCam.zoom *= zoomSens
