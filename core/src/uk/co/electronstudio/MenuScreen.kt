@@ -6,16 +6,22 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.scenes.scene2d.EventListener
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import ktx.scene2d.*
+import ktx.actors.*
 import net.dermetfan.gdx.scenes.scene2d.ui.FileChooser
 import net.dermetfan.gdx.scenes.scene2d.ui.ListFileChooser
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
+import com.badlogic.gdx.scenes.scene2d.InputListener
+
+
 
 
 
@@ -24,8 +30,9 @@ class MenuScreen(val app: App): ScreenAdapter() {
     private var table: Table? = null
 
     init {
+        app.log.info("menuscreen init")
         stage = Stage()
-        Gdx.input.inputProcessor = stage
+
 
         val s = Skin(Gdx.files.internal("skin/uiskin.json"))
 
@@ -88,8 +95,15 @@ class MenuScreen(val app: App): ScreenAdapter() {
 //                // Cell of the nested actor is also available through "it":
 //                it.spaceBottom(10f).row()
 //            }
-            textButton(text = "LOAD (L)")
-            textButton(text = "QUIT (Q)")
+            textButton(text = "TOGGLE MENU (ESC)").onClick {
+                app.setScreen(app.viewScreen)
+            }
+            row()
+            textButton(text = "LOAD FILE (L)")
+            row()
+            textButton(text = "QUIT (Q)").onClick {
+                app.viewScreen.quit()
+            }
             row()
             label("Mouse scrollwheel sensitivity")
             slider(min=10f, max=100f, step=10f)
@@ -121,10 +135,22 @@ class MenuScreen(val app: App): ScreenAdapter() {
       //  window2.add(chooser)
       //  window2.pack()
 
+        stage!!.addListener(object : InputListener() {
+            override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
+                when(keycode){
+                    Input.Keys.ESCAPE -> app.setScreen(app.viewScreen)
+                    Input.Keys.Q -> app.viewScreen.quit()
+                    Input.Keys.L -> app.viewScreen.requestFile()
+                }
+                return super.keyDown(event, keycode)
+            }
+        })
         chooser.setFillParent(true)
        window.setFillParent(true)
         table!!.setFillParent(true)
         stage!!.addActor(window)
+
+
 
         //table!!.setDebug(true) // This is optional, but enables debug lines for tables.
 
@@ -132,6 +158,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
     }
 
     override fun resize(width: Int, height: Int) {
+        app.log.info("menuscreen resize")
         stage?.getViewport()?.update(width, height, true)
     }
 
@@ -140,14 +167,16 @@ class MenuScreen(val app: App): ScreenAdapter() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stage?.act(Gdx.graphics.deltaTime)
         stage?.draw()
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)){
-            System.exit(0)
-        }
-
     }
 
+    override fun show() {
+        app.log.info("menuscreen show")
+        Gdx.input.isCursorCatched = false
+        Gdx.input.inputProcessor = stage
+    }
 
     override fun dispose() {
+        app.log.info("menuscreen dispose")
         stage!!.dispose()
     }
 }

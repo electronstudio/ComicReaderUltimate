@@ -1,15 +1,9 @@
 package uk.co.electronstudio
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import org.apache.tika.Tika
 import uk.co.electronstudio.App.Companion.pleaseRender
 import java.io.File
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.IntBuffer
-import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class Comic(val filename: String) {
      abstract val pages: List<Page>
@@ -19,7 +13,8 @@ abstract class Comic(val filename: String) {
 
 
     abstract fun loadPixmaps()
-    var loaded=0
+    var loadedTextures=0
+    var loadedPreviews=0
 
     fun loadUnloadedTexturesFromPixmaps() {
         var count=0
@@ -28,7 +23,7 @@ abstract class Comic(val filename: String) {
         //    if(loaded<10000){
                 if(page.texture==null && page.pixmap !=null){
                     page.loadTexture()
-                    loaded++
+                    loadedTextures++
                     count++
                     pleaseRender()
                     return
@@ -47,6 +42,7 @@ abstract class Comic(val filename: String) {
         pages?.forEach{page->
             if(page.previewTexture ==null && page.pixmap !=null){
                 page.loadPreviewTexture()
+                loadedPreviews++
                 count++
                 pleaseRender()
             }

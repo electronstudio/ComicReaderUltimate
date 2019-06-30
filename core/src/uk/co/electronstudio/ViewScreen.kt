@@ -10,14 +10,11 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.MathUtils
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
 import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
-import de.tomgrill.gdxdialogs.core.GDXDialogs
-import de.tomgrill.gdxdialogs.core.listener.ButtonClickListener
 import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
 import java.util.logging.Level
 
@@ -65,6 +62,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     private val quitAtEnd = true
     private val spaceBarAdvanceAmount = 0.5f
     private val mouseAcceleration = 1.1f // 1 to 1.99
+    private var showDebug = true
 
 
     init {
@@ -72,13 +70,14 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
         //else attempt to load previous comic
         if (fileToLoad != null) {
             loadComic(fileToLoad)
-        } else {
-            requestFile()
         }
+//        else {
+//            requestFile()
+//        }
     }
 
     override fun resize(width: Int, height: Int) {
-        app.log.info("resize")
+        app.log.info("resize $width $height")
         super.resize(width, height)
         realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
@@ -89,18 +88,17 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
         goalCam.update()
         Gdx.input.inputProcessor = this
 
-        app.log.info("CAM X "+realCam.position.x)
-        app.log.info("CAM Y "+realCam.position.y)
+        app.log.info("realcam position ${realCam.position.x} ${realCam.position.y}")
     }
 
     override fun show() {
-        app.log.info("show")
-        super.show()
+        app.log.info("viewscreen show")
         Gdx.input.inputProcessor = this
+        Gdx.input.isCursorCatched = true
     }
 
 
-    private fun requestFile() {
+    fun requestFile() {
         val conf = NativeFileChooserConfiguration()
 
         //  conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
@@ -175,6 +173,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     override fun render(delta: Float) {
       //  app.log.info("render")
         Gdx.graphics.isContinuousRendering = false
+        if(comic==null) app.setScreen(app.menuScreen)
         comic?.let {
             it.loadPreviewTexturesFromPixmaps()
             it.loadUnloadedTexturesFromPixmaps()
@@ -242,6 +241,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
 
         textBatch.begin()
+        font.setColor(Color.WHITE)
         font.draw(textBatch, "${currentPage+1}/${comic?.pages?.size}", 0f, 11f);
         textBatch.end()
 
@@ -262,9 +262,14 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
 
         textBatch.begin()
-        font.setColor(Color.RED)
-        font.draw(textBatch, "${currentPage+1}/${comic?.pages?.size} ${realCam.position.y} ${realCam.zoom}", 0f, 11f);
-        font.setColor(Color.WHITE)
+        if(showDebug) {
+            font.setColor(Color.RED)
+            font.draw(textBatch,
+                "page: ${currentPage + 1} total: ${comic?.pages?.size} loaded: ${comic?.loadedTextures} previews: ${comic?.loadedPreviews} camera: ${realCam.position.x.toInt()}  ${realCam.position.y.toInt()} screen: ${Gdx.graphics.width} ${Gdx.graphics.height} zoom: ${realCam.zoom}",
+                0f,
+                11f);
+
+        }
         textBatch.end()
 
 
@@ -471,7 +476,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.ESCAPE -> {
-                quit()
+                app.setScreen(app.menuScreen)
             }
             Input.Keys.Q -> {
                 quit()
@@ -504,10 +509,10 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
         return true
     }
 
-    private fun quit() {
+    fun quit() {
         prefs.putInteger("currentPage", currentPage)
         prefs.flush()
-        System.exit(0)
+        Gdx.app.exit()
     }
 
     var oldZoom=1f
