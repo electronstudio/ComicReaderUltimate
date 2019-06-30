@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.utils.Array
 import ktx.scene2d.*
 import ktx.actors.*
@@ -77,6 +78,9 @@ class MenuScreen(val app: App): ScreenAdapter() {
            // pack()
         }
 
+
+
+
         val window = window(title = "Settings") {
 //            button { cell ->
 //                // Changing button properties - button is "this":
@@ -98,18 +102,31 @@ class MenuScreen(val app: App): ScreenAdapter() {
             textButton(text = "TOGGLE MENU (ESC)").onClick {
                 app.setScreen(app.viewScreen)
             }
-            row()
-            textButton(text = "LOAD FILE (L)")
+
+            textButton(text = "LOAD FILE (L)").onClick {
+                app.viewScreen.requestFile()
+            }
             row()
             textButton(text = "QUIT (Q)").onClick {
                 app.viewScreen.quit()
             }
+            textButton(text = "RESET DEFAULTS").onClick {
+                app.viewScreen.quit()
+            }
+            label("Double pages")
+            checkBox(""){
+                onChange {
+                    app.viewScreen.doublePage=isChecked
+                }
+            }
             row()
             label("Mouse scrollwheel sensitivity")
-            slider(min=10f, max=100f, step=10f)
+            val sens = slider(min=10f, max=100f, step=10f)
             row()
             label("Mouse movement sensitivity")
-            slider(min=10f, max=100f, step=10f)
+            slider(min=10f, max=100f, step=10f){
+
+            }
             row()
             label("Number of columns")
             slider(min=1f, max=10f, step=1f)
@@ -125,6 +142,9 @@ class MenuScreen(val app: App): ScreenAdapter() {
             // Packing the root window:
             pack()
         }
+
+
+
 
 
         val window2 = window(title = "Settings") {

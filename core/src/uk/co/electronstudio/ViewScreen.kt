@@ -30,7 +30,7 @@ import java.util.logging.Level
  * remember page for all previously opened comics, not just last one?
  */
 
-class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : ScreenAdapter(), InputProcessor {
+class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) : ScreenAdapter(), InputProcessor {
 
     private var batch: SpriteBatch = SpriteBatch() //5000, createDefaultShaderGL3())
     private var realCam: OrthographicCamera = OrthographicCamera()
@@ -51,34 +51,77 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
     private var zoomIn = false
     private var zoomOut = false
 
-    private var doublePage = false
-    private var continuousScroll = false
-    private val background: Color = Color.BLACK
-    private val zoomSpeed = 0.1f // 0.01 - 0.10
-    private val scrollSpeed = 60f
-    private val zoomSens = 1.1f
-    private val mouseSens = 5f
-    private val mouseSmoothing = false
-    private val quitAtEnd = true
-    private val spaceBarAdvanceAmount = 0.5f
-    private val mouseAcceleration = 1.1f // 1 to 1.99
-    private var showDebug = true
+    var doublePage = false
+    var continuousScroll = false
+    var background = Color.BLACK
+    var zoomSpeed = 0.1f // 0.01 - 0.10
+    var scrollSpeed = 60f
+    var zoomSens = 1.1f
+    var mouseSens = 5f
+    var mouseSmoothing = false
+    var quitAtEnd = true
+    var spaceBarAdvanceAmount = 0.5f
+    var mouseAcceleration = 1.1f // 1 to 1.99
+    var showDebug = true
 
+    fun defaultPrefs(){
+        doublePage = false
+        continuousScroll = false
+        background = Color.BLACK
+        zoomSpeed = 0.1f // 0.01 - 0.10
+        scrollSpeed = 60f
+        zoomSens = 1.1f
+        mouseSens = 5f
+        mouseSmoothing = false
+        quitAtEnd = true
+        spaceBarAdvanceAmount = 0.5f
+        mouseAcceleration = 1.1f // 1 to 1.99
+        showDebug = true
+    }
+
+    fun loadPrefs(){
+        doublePage = prefs.getBoolean("doublePage", doublePage)
+        continuousScroll = prefs.getBoolean("continuousScroll", continuousScroll)
+        background = Color.BLACK
+        zoomSpeed = prefs.getFloat("zoomSpeed", zoomSpeed)
+        scrollSpeed = prefs.getFloat("scrollSpeed", scrollSpeed)
+        zoomSens = prefs.getFloat("zoomSens", zoomSens)
+        mouseSens = prefs.getFloat("mouseSens", mouseSens)
+        mouseSmoothing = prefs.getBoolean("mouseSmoothing", mouseSmoothing)
+        quitAtEnd = prefs.getBoolean("quitAtEnd", quitAtEnd)
+        spaceBarAdvanceAmount = prefs.getFloat("spaceBarAdvanceAmount", spaceBarAdvanceAmount)
+        mouseAcceleration = prefs.getFloat("mouseAcceleration", mouseAcceleration)
+        showDebug = prefs.getBoolean("showDebug", showDebug)
+    }
+
+    fun savePrefs(){
+        prefs.putBoolean("doublePage", doublePage)
+        prefs.putBoolean("continuousScroll", continuousScroll)
+        prefs.putFloat("zoomSpeed", zoomSpeed)
+        prefs.putFloat("scrollSpeed", scrollSpeed)
+        prefs.putFloat("zoomSens", zoomSens)
+        prefs.putFloat("mouseSens", mouseSens)
+        prefs.putBoolean("mouseSmoothing", mouseSmoothing)
+        prefs.putBoolean("quitAtEnd", quitAtEnd)
+        prefs.putFloat("spaceBarAdvanceAmount", spaceBarAdvanceAmount)
+        prefs.putFloat("mouseAcceleration", mouseAcceleration)
+        prefs.putBoolean("showDebug", showDebug)
+        prefs.flush()
+    }
 
     init {
         //if passed comic, attempt to load it
         //else attempt to load previous comic
-        if (fileToLoad != null) {
-            loadComic(fileToLoad)
-        }
+//        if (fileToLoad != null) {
+//            loadComic(fileToLoad)
+//        }
 //        else {
 //            requestFile()
 //        }
-    }
 
-    override fun resize(width: Int, height: Int) {
-        app.log.info("resize $width $height")
-        super.resize(width, height)
+        defaultPrefs()
+        loadPrefs()
+
         realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
@@ -91,6 +134,14 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
         app.log.info("realcam position ${realCam.position.x} ${realCam.position.y}")
     }
 
+
+
+    override fun resize(width: Int, height: Int) {
+        app.log.info("resize $width $height")
+        super.resize(width, height)
+
+    }
+
     override fun show() {
         app.log.info("viewscreen show")
         Gdx.input.inputProcessor = this
@@ -99,6 +150,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
 
     fun requestFile() {
+        app.setScreen(this)
         val conf = NativeFileChooserConfiguration()
 
         //  conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
@@ -172,6 +224,11 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
     override fun render(delta: Float) {
       //  app.log.info("render")
+        val f = fileToLoad
+        if (f != null) {
+            fileToLoad = null
+            loadComic(f)
+        }
         Gdx.graphics.isContinuousRendering = false
         if(comic==null) app.setScreen(app.menuScreen)
         comic?.let {
@@ -511,7 +568,7 @@ class ViewScreen(val app: App, fileToLoad: String?, var currentPage: Int=0) : Sc
 
     fun quit() {
         prefs.putInteger("currentPage", currentPage)
-        prefs.flush()
+        savePrefs()
         Gdx.app.exit()
     }
 
