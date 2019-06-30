@@ -7,8 +7,11 @@ ComicReaderUltimate (CRU) is the modern sucessor to ComicReaderPro, one of the e
 
 CRU is highly configurable - you can tweak values to find the most natural reading experience.  However it is also highly opinionated.  It always runs fullscreen because that is best way to read comics.  There is no GUI because you are expected to learn the mouse and keyboard controls.  There is no file browser because your operating system should already have one.
 
+CRU is optimized to be as fast and responsive as possible on modern systems without worrying if it will run on legacy hardware.  This comes at the cost of memory usage - it is assumed you have at least 4GB of RAM and a modern GPU with 2GB of VRAM.  (CRU makes some effort to optimize for battery power but performance comes first.)  
+
 TODO:
 * a GUI to make configuration easier
 * Android and iOS versions
-* support drag-and-drop file opening on Mac (ComicReaderPro had it, so why doesn't CRU? Short answer: blame Apple. Long answer: blame Oracle.)
+* Windows installer and file associations
+* Optimizations for integrated GPU
 

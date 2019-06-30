@@ -19,7 +19,7 @@ abstract class Comic(val filename: String) {
 
 
     abstract fun loadPixmaps()
-    private var loaded=0
+    var loaded=0
 
     fun loadUnloadedTexturesFromPixmaps() {
         var count=0
