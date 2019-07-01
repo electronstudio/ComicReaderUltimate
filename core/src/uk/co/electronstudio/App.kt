@@ -10,7 +10,7 @@ import java.util.logging.Logger
 class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
 
     lateinit var viewScreen: ViewScreen
-    lateinit var menuScreen: MenuScreen
+    //lateinit var menuScreen: MenuScreen
     lateinit var config: Config
 
 
@@ -37,7 +37,7 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
         }
         log.info("creating viewscreen, pleaseLoad is $pleaseLoad")
         viewScreen = ViewScreen(this, fileToOpen, startPage)
-        menuScreen = MenuScreen(this)
+        //menuScreen = MenuScreen(this)
         setScreen(viewScreen)
     }
 

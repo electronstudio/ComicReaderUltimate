@@ -24,8 +24,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 
 
 
-
-
 class MenuScreen(val app: App): ScreenAdapter() {
     val config = app.config
     private var stage: Stage? = null
@@ -100,45 +98,109 @@ class MenuScreen(val app: App): ScreenAdapter() {
 //                // Cell of the nested actor is also available through "it":
 //                it.spaceBottom(10f).row()
 //            }
-            textButton(text = "TOGGLE MENU (ESC)").onClick {
+            textButton(text = "TOGGLE MENU [ESC]").onClick {
                 app.setScreen(app.viewScreen)
             }
 
-            textButton(text = "LOAD FILE (L)").onClick {
+            textButton(text = "LOAD FILE [L]").onClick {
                 app.viewScreen.requestFile()
             }
             row()
-            textButton(text = "QUIT (Q)").onClick {
+            textButton(text = "QUIT [Q]").onClick {
                 app.viewScreen.quit()
             }
             textButton(text = "RESET DEFAULTS").onClick {
-                app.viewScreen.quit()
+                config.defaultPrefs()
+                app.setScreen(app.viewScreen)
             }
-            label("Double pages")
+            row()
+            label("Double pages [D]")
             checkBox(""){
                 onChange {
                     config.doublePage=isChecked
                 }
+                isChecked=config.doublePage
             }
             row()
-            label("Mouse scrollwheel sensitivity")
-            val sens = slider(min=10f, max=100f, step=10f)
-            row()
-            label("Mouse movement sensitivity")
-            slider(min=10f, max=100f, step=10f){
-
+            label("Continuous scroll [C]")
+            checkBox(""){
+                onChange {
+                    config.continuousScroll=isChecked
+                }
+                isChecked=config.continuousScroll
             }
             row()
-            label("Number of columns")
-            slider(min=1f, max=10f, step=1f)
+            label("Mouse smoothing")
+            checkBox(""){
+                onChange {
+                    config.mouseSmoothing=isChecked
+                }
+                isChecked=config.mouseSmoothing
+            }
             row()
-            label("Keyboard scroll speed")
-            slider(min=10f, max=100f, step=10f)
+            label("Quit after final page")
+            checkBox(""){
+                onChange {
+                    config.quitAtEnd=isChecked
+                }
+                isChecked=config.quitAtEnd
+            }
             row()
-            label("Zoom speed")
-            slider(min=10f, max=100f, step=10f)
+            label("Show debug into")
+            checkBox(""){
+                onChange {
+                    config.showDebug=isChecked
+                }
+                isChecked=config.showDebug
+            }
             row()
-
+            label("Mouse acceleration")
+            slider(min=1f, max=2f, step=0.1f){
+                onChange {
+                    config.mouseAcceleration=value
+                }
+                value=config.mouseAcceleration
+            }
+            row()
+            label("Space bar scroll amount")
+            slider(min=0.1f, max=1f, step=0.1f){
+                onChange {
+                    config.spaceBarAdvanceAmount=value
+                }
+                value=config.spaceBarAdvanceAmount
+            }
+            row()
+            label("Speed of zoom animation")
+            slider(min=0.01f, max=0.15f, step=0.01f){
+                onChange {
+                    config.zoomSpeed=value
+                }
+                value=config.zoomSpeed
+            }
+            row()
+            label("Speed of scroll animation")
+            slider(min=1f, max=120f, step=1f){
+                onChange {
+                    config.scrollSpeed=value
+                }
+                value=config.scrollSpeed
+            }
+            row()
+            label("Zoom sensitivity")
+            slider(min=1.01f, max=2f, step=0.01f){
+                onChange {
+                    config.zoomSens=value
+                }
+                value=config.zoomSens
+            }
+            row()
+            label("Scroll sensitivity")
+            slider(min=1f, max=150f, step=1f){
+                onChange {
+                    config.mouseSens=value
+                }
+                value=config.mouseSens
+            }
 
             // Packing the root window:
             pack()

@@ -27,16 +27,20 @@ class Config {
     fun defaultPrefs(){
         doublePage = false
         continuousScroll = false
-        background = Color.BLACK
+        mouseSmoothing = false
+        quitAtEnd = true
+        showDebug = true
+        mouseAcceleration = 1.1f // 1 to 1.99
+        spaceBarAdvanceAmount = 0.5f
+
         zoomSpeed = 0.1f // 0.01 - 0.10
         scrollSpeed = 60f
         zoomSens = 1.1f
         mouseSens = 5f
-        mouseSmoothing = false
-        quitAtEnd = true
-        spaceBarAdvanceAmount = 0.5f
-        mouseAcceleration = 1.1f // 1 to 1.99
-        showDebug = true
+        background = Color.BLACK
+
+
+
     }
 
     fun loadPrefs(){

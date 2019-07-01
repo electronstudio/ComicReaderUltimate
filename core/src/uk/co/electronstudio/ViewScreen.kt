@@ -174,7 +174,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
             loadComic(f)
         }
         Gdx.graphics.isContinuousRendering = false
-        if(comic==null) app.setScreen(app.menuScreen)
+        if(comic==null) app.setScreen(MenuScreen(app))
         comic?.let {
             it.loadPreviewTexturesFromPixmaps()
             it.loadUnloadedTexturesFromPixmaps()
@@ -477,7 +477,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.ESCAPE -> {
-                app.setScreen(app.menuScreen)
+                app.setScreen(MenuScreen(app))
             }
             Input.Keys.Q -> {
                 quit()
