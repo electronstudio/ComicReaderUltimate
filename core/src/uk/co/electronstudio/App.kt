@@ -11,6 +11,7 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
 
     lateinit var viewScreen: ViewScreen
     lateinit var menuScreen: MenuScreen
+    lateinit var config: Config
 
 
     var pleaseLoad: String? = null
@@ -20,6 +21,7 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
         Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
         Gdx.input.isCursorCatched = false
 
+        config = Config()
         var prefs = Gdx.app.getPreferences("uk.co.electronstudio.comicreaderultimate")
         var fileToOpen:String? = null
         var startPage=0
@@ -35,9 +37,8 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
         }
         log.info("creating viewscreen, pleaseLoad is $pleaseLoad")
         viewScreen = ViewScreen(this, fileToOpen, startPage)
-     //   viewScreen = ViewScreen(this, "/Volumes/Home/rich/test.cbz")
         menuScreen = MenuScreen(this)
-        setScreen(viewScreen)//viewScreen
+        setScreen(viewScreen)
     }
 
     fun requestLoad(fileToLoad: String) {

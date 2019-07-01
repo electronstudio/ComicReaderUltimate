@@ -37,7 +37,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
     private var goalCam: OrthographicCamera = OrthographicCamera()
     val font =  BitmapFont()
     val textBatch = SpriteBatch()
-    var prefs = Gdx.app.getPreferences("uk.co.electronstudio.comicreaderultimate")
+
 
     var dialogs = GDXDialogsSystem.install()
 
@@ -51,63 +51,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
     private var zoomIn = false
     private var zoomOut = false
 
-    var doublePage = false
-    var continuousScroll = false
-    var background = Color.BLACK
-    var zoomSpeed = 0.1f // 0.01 - 0.10
-    var scrollSpeed = 60f
-    var zoomSens = 1.1f
-    var mouseSens = 5f
-    var mouseSmoothing = false
-    var quitAtEnd = true
-    var spaceBarAdvanceAmount = 0.5f
-    var mouseAcceleration = 1.1f // 1 to 1.99
-    var showDebug = true
+    val config = app.config
 
-    fun defaultPrefs(){
-        doublePage = false
-        continuousScroll = false
-        background = Color.BLACK
-        zoomSpeed = 0.1f // 0.01 - 0.10
-        scrollSpeed = 60f
-        zoomSens = 1.1f
-        mouseSens = 5f
-        mouseSmoothing = false
-        quitAtEnd = true
-        spaceBarAdvanceAmount = 0.5f
-        mouseAcceleration = 1.1f // 1 to 1.99
-        showDebug = true
-    }
-
-    fun loadPrefs(){
-        doublePage = prefs.getBoolean("doublePage", doublePage)
-        continuousScroll = prefs.getBoolean("continuousScroll", continuousScroll)
-        background = Color.BLACK
-        zoomSpeed = prefs.getFloat("zoomSpeed", zoomSpeed)
-        scrollSpeed = prefs.getFloat("scrollSpeed", scrollSpeed)
-        zoomSens = prefs.getFloat("zoomSens", zoomSens)
-        mouseSens = prefs.getFloat("mouseSens", mouseSens)
-        mouseSmoothing = prefs.getBoolean("mouseSmoothing", mouseSmoothing)
-        quitAtEnd = prefs.getBoolean("quitAtEnd", quitAtEnd)
-        spaceBarAdvanceAmount = prefs.getFloat("spaceBarAdvanceAmount", spaceBarAdvanceAmount)
-        mouseAcceleration = prefs.getFloat("mouseAcceleration", mouseAcceleration)
-        showDebug = prefs.getBoolean("showDebug", showDebug)
-    }
-
-    fun savePrefs(){
-        prefs.putBoolean("doublePage", doublePage)
-        prefs.putBoolean("continuousScroll", continuousScroll)
-        prefs.putFloat("zoomSpeed", zoomSpeed)
-        prefs.putFloat("scrollSpeed", scrollSpeed)
-        prefs.putFloat("zoomSens", zoomSens)
-        prefs.putFloat("mouseSens", mouseSens)
-        prefs.putBoolean("mouseSmoothing", mouseSmoothing)
-        prefs.putBoolean("quitAtEnd", quitAtEnd)
-        prefs.putFloat("spaceBarAdvanceAmount", spaceBarAdvanceAmount)
-        prefs.putFloat("mouseAcceleration", mouseAcceleration)
-        prefs.putBoolean("showDebug", showDebug)
-        prefs.flush()
-    }
 
     init {
         //if passed comic, attempt to load it
@@ -119,8 +64,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
 //            requestFile()
 //        }
 
-        defaultPrefs()
-        loadPrefs()
+
 
         realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
@@ -195,8 +139,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
             comic = c
 
             moveCameraToStartPosition()
-            prefs.putString("lastFile", filename)
-            prefs.flush()
+            config.prefs.putString("lastFile", filename)
+            config.prefs.flush()
         }catch (e: Throwable){
             app.log.log(Level.SEVERE, "error loading comic", e)
             e.printStackTrace()
@@ -247,9 +191,9 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
     private fun constrainScrolling(){
 
         comic?.let {
-            val pageWidth = it.pages[if(continuousScroll) 0 else currentPage].width()
+            val pageWidth = it.pages[if(config.continuousScroll) 0 else currentPage].width()
             if(pageWidth==null) return
-            val contentWidth = if(doublePage) pageWidth*2 else pageWidth //fixme wrong if one page is wider than others
+            val contentWidth = if(config.doublePage) pageWidth*2 else pageWidth //fixme wrong if one page is wider than others
             if(contentWidth/realCam.zoom < Gdx.graphics.width.toFloat()){
                 realCam.position.x=contentWidth/2f
                 goalCam.position.x=contentWidth/2f
@@ -263,7 +207,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
             //add up all the page heights to find bottom scroll limit
             //fixme tidy
             //fixme work for double page mode
-            if(continuousScroll && totalPageHeights>0f) {
+            if(config.continuousScroll && totalPageHeights>0f) {
                 realCam.position.y =
                     Math.min(realCam.position.y, totalPageHeights - (Gdx.graphics.height / 2f) * realCam.zoom)
                 goalCam.position.y =
@@ -271,7 +215,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
             }
 
 
-            if(!continuousScroll){
+            if(!config.continuousScroll){
                 val pageHeight = it.pages[currentPage].height()
                 if(pageHeight==null) return
                 if(pageHeight/realCam.zoom < Gdx.graphics.height.toFloat()){
@@ -293,7 +237,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
 
 
     private fun draw() {
-        Gdx.gl.glClearColor(background.r, background.g, background.b, background.a)
+        Gdx.gl.glClearColor(config.background.r, config.background.g, config.background.b, config.background.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
 
@@ -309,8 +253,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
 
         batch.begin()
         comic?.let {
-            if(continuousScroll){
-                renderAll(it, batch, if(doublePage) 2 else 1)
+            if(config.continuousScroll){
+                renderAll(it, batch, if(config.doublePage) 2 else 1)
             }else{
                renderSingle(it, batch)
             }
@@ -319,7 +263,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
 
 
         textBatch.begin()
-        if(showDebug) {
+        if(config.showDebug) {
             font.setColor(Color.RED)
             font.draw(textBatch,
                 "page: ${currentPage + 1} total: ${comic?.pages?.size} loaded: ${comic?.loadedTextures} previews: ${comic?.loadedPreviews} camera: ${realCam.position.x.toInt()}  ${realCam.position.y.toInt()} screen: ${Gdx.graphics.width} ${Gdx.graphics.height} zoom: ${realCam.zoom}",
@@ -341,7 +285,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
             tex.texture?.setFilter(comic.filter, comic.filter)
             batch.draw(it, 0f, 0f, page.width(), page.height())
         }
-        if(doublePage && currentPage<comic.pages.lastIndex){
+        if(config.doublePage && currentPage<comic.pages.lastIndex){
             val page2=comic.pages.get(currentPage+1)
             val tex2 = page2.texture ?: page2.previewTexture
             tex2?.let {
@@ -387,9 +331,9 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
             App.pleaseRender()
         }
 
-        val xd: Float = if (scrollLeft) -scrollSpeed else if (scrollRight) scrollSpeed else 0f
-        val yd: Float = if (scrollUp) -scrollSpeed else if (scrollDown) scrollSpeed else 0f
-        val zd: Float = if (zoomIn) 1 - zoomSpeed else if (zoomOut) 1 + zoomSpeed else 1f
+        val xd: Float = if (scrollLeft) -config.scrollSpeed else if (scrollRight) config.scrollSpeed else 0f
+        val yd: Float = if (scrollUp) -config.scrollSpeed else if (scrollDown) config.scrollSpeed else 0f
+        val zd: Float = if (zoomIn) 1 - config.zoomSpeed else if (zoomOut) 1 + config.zoomSpeed else 1f
 
         realCam.translate(xd, yd)
         goalCam.translate(xd, yd)
@@ -401,25 +345,25 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
 
     private fun moveRealCamTowardsGoalCam() {
         if (goalCam.zoom < realCam.zoom) {
-            realCam.zoom *= (1 - zoomSpeed)
+            realCam.zoom *= (1 - config.zoomSpeed)
             if (goalCam.zoom > realCam.zoom) realCam.zoom = goalCam.zoom
             App.pleaseRender()
         } else if (goalCam.zoom > realCam.zoom) {
-            realCam.zoom *= (1 + zoomSpeed)
+            realCam.zoom *= (1 + config.zoomSpeed)
             if (goalCam.zoom < realCam.zoom) realCam.zoom = goalCam.zoom
             App.pleaseRender()
         }
 
         if (goalCam.position.y < realCam.position.y) {
-            realCam.position.y -= scrollSpeed
+            realCam.position.y -= config.scrollSpeed
             if (goalCam.position.y > realCam.position.y) realCam.position.y = goalCam.position.y
             App.pleaseRender()
         } else if (goalCam.position.y > realCam.position.y) {
-            realCam.position.y += scrollSpeed
+            realCam.position.y += config.scrollSpeed
             if (goalCam.position.y < realCam.position.y) realCam.position.y = goalCam.position.y
             App.pleaseRender()
         }
-        if(continuousScroll){
+        if(config.continuousScroll){
             currentPage=convertScrollAmountToPageNumber(realCam.position.y)
 
 
@@ -463,9 +407,9 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val mx = Gdx.input.deltaX.toDouble()
         val my = Gdx.input.deltaY.toDouble()
-        val x = MathUtils.clamp((Math.pow(Math.abs(mx), mouseAcceleration.toDouble()) * realCam.zoom * mouseSens).toFloat() * if(mx>0f) 1f else -1f, -500f, 500f)
+        val x = MathUtils.clamp((Math.pow(Math.abs(mx), config.mouseAcceleration.toDouble()) * realCam.zoom * config.mouseSens).toFloat() * if(mx>0f) 1f else -1f, -500f, 500f)
         //MathUtils.clamp((Math.pow(mx, mouseAcceleration.toDouble()) * realCam.zoom * mouseSens).toFloat(), -5f, 5f)
-        val y = MathUtils.clamp((Math.pow(Math.abs(my), mouseAcceleration.toDouble()) * realCam.zoom * mouseSens).toFloat() * if(my>0f) 1f else -1f, -500f, 500f)
+        val y = MathUtils.clamp((Math.pow(Math.abs(my), config.mouseAcceleration.toDouble()) * realCam.zoom * config.mouseSens).toFloat() * if(my>0f) 1f else -1f, -500f, 500f)
 
 
         // * (if (my<0) 1 else -1)
@@ -474,7 +418,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
 //        val x = ((1f/(0+linearity)) * mx * (Math.abs(mx)*linearity)).toFloat();
 //        val y = ((1f/(0+linearity)) * my * (Math.abs(my)*linearity)).toFloat();
 
-        if(mouseSmoothing) {
+        if(config.mouseSmoothing) {
             app.log.info("mouse moved y $y")
             mouseHistoryX.add(x)
             mouseHistoryY.add(y)
@@ -500,9 +444,9 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
         app.log.info("scrolled $amount")
 
         if (amount > 0) {
-            goalCam.zoom *= zoomSens
+            goalCam.zoom *= config.zoomSens
         } else {
-            goalCam.zoom /= zoomSens
+            goalCam.zoom /= config.zoomSens
         }
         App.pleaseRender()
         return true
@@ -544,15 +488,15 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
             Input.Keys.RIGHT -> scrollRight = true
             Input.Keys.EQUALS -> zoomIn = true
             Input.Keys.MINUS -> zoomOut = true
-            Input.Keys.D -> doublePage = !doublePage
+            Input.Keys.D -> config.doublePage = !config.doublePage
             Input.Keys.PAGE_DOWN -> nextPage()
             Input.Keys.PAGE_UP -> prevPage()
             Input.Keys.O -> requestFile()
             Input.Keys.SPACE -> advance()
             Input.Keys.B -> comic?.swapFilter()
             Input.Keys.C -> {
-                continuousScroll = !continuousScroll
-                if(continuousScroll){
+                config.continuousScroll = !config.continuousScroll
+                if(config.continuousScroll){
                     goalCam.position.y=convertPageNumberToScrollAmount(currentPage)
                     realCam.position.y=goalCam.position.y
                 }
@@ -567,8 +511,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
     }
 
     fun quit() {
-        prefs.putInteger("currentPage", currentPage)
-        savePrefs()
+        config.prefs.putInteger("currentPage", currentPage)
+        config.savePrefs()
         Gdx.app.exit()
     }
 
@@ -609,12 +553,12 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
 
     fun nextPage(){
         comic?.let {
-            if(it.pages.lastIndex == currentPage && quitAtEnd){
-                prefs.remove("lastFile")
+            if(it.pages.lastIndex == currentPage && config.quitAtEnd){
+                config.prefs.remove("lastFile")
                 quit()
             }
         }
-        if(continuousScroll){
+        if(config.continuousScroll){
             goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * 1f )
         }else {
             currentPage = MathUtils.clamp(currentPage + 1, 0, comic?.pages?.lastIndex ?: 0)
@@ -622,7 +566,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
         }
     }
     fun prevPage(){
-        if(continuousScroll){
+        if(config.continuousScroll){
             goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * -1f )
         }else {
             currentPage = MathUtils.clamp(currentPage - 1, 0, comic?.pages?.lastIndex ?: 0)
@@ -638,10 +582,10 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int=0) 
     }
 
     fun advance(){
-        if(!continuousScroll && goalCam.position.y >= ((comic?.pages?.get(currentPage)?.height() ?: 0f) - (Gdx.graphics.height / 2f) * realCam.zoom)-1){
+        if(!config.continuousScroll && goalCam.position.y >= ((comic?.pages?.get(currentPage)?.height() ?: 0f) - (Gdx.graphics.height / 2f) * realCam.zoom)-1){
             nextPage()
         }else{
-            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * spaceBarAdvanceAmount )//goalCam.zoom)
+            goalCam.translate(0f, (comic?.pages?.get(currentPage)?.height() ?: 0f) * config.spaceBarAdvanceAmount )//goalCam.zoom)
         }
         App.pleaseRender()
     }

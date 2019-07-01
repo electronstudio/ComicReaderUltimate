@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 
 
 class MenuScreen(val app: App): ScreenAdapter() {
+    val config = app.config
     private var stage: Stage? = null
     private var table: Table? = null
 
@@ -116,7 +117,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
             label("Double pages")
             checkBox(""){
                 onChange {
-                    app.viewScreen.doublePage=isChecked
+                    config.doublePage=isChecked
                 }
             }
             row()
