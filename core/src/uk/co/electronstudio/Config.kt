@@ -23,6 +23,9 @@ class Config {
     var spaceBarAdvanceAmount = 0.5f
     var mouseAcceleration = 1.1f // 1 to 1.99
     var showDebug = true
+    var useMouseWheelForZoom = true
+    var useMouseMoveForZoom = false
+    var reverseScroll = false
 
     fun defaultPrefs(){
         doublePage = false
@@ -30,6 +33,10 @@ class Config {
         mouseSmoothing = false
         quitAtEnd = true
         showDebug = true
+        useMouseWheelForZoom = true
+        useMouseMoveForZoom = false
+        reverseScroll = false
+
         mouseAcceleration = 1.1f // 1 to 1.99
         spaceBarAdvanceAmount = 0.5f
 
@@ -37,6 +44,8 @@ class Config {
         scrollSpeed = 60f
         zoomSens = 1.1f
         mouseSens = 5f
+
+
         background = Color.BLACK
 
 
@@ -56,6 +65,9 @@ class Config {
         spaceBarAdvanceAmount = prefs.getFloat("spaceBarAdvanceAmount", spaceBarAdvanceAmount)
         mouseAcceleration = prefs.getFloat("mouseAcceleration", mouseAcceleration)
         showDebug = prefs.getBoolean("showDebug", showDebug)
+        useMouseMoveForZoom = prefs.getBoolean("useMouseMoveForZoom", useMouseMoveForZoom)
+        useMouseWheelForZoom = prefs.getBoolean("useMouseWheelForZoom", useMouseWheelForZoom)
+        reverseScroll = prefs.getBoolean("reverseScroll", reverseScroll)
     }
 
     fun savePrefs(){
@@ -70,6 +82,9 @@ class Config {
         prefs.putFloat("spaceBarAdvanceAmount", spaceBarAdvanceAmount)
         prefs.putFloat("mouseAcceleration", mouseAcceleration)
         prefs.putBoolean("showDebug", showDebug)
+        prefs.putBoolean("useMouseMoveForZoom", useMouseMoveForZoom)
+        prefs.putBoolean("useMouseWheelForZoom", useMouseWheelForZoom)
+        prefs.putBoolean("reverseScroll", reverseScroll)
         prefs.flush()
     }
 

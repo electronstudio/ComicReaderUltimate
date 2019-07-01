@@ -154,6 +154,30 @@ class MenuScreen(val app: App): ScreenAdapter() {
                 isChecked=config.showDebug
             }
             row()
+            label("Use mouse movement to zoom")
+            checkBox(""){
+                onChange {
+                    config.useMouseMoveForZoom=isChecked
+                }
+                isChecked=config.useMouseMoveForZoom
+            }
+            row()
+            label("Use mouse wheel to zoom")
+            checkBox(""){
+                onChange {
+                    config.useMouseWheelForZoom=isChecked
+                }
+                isChecked=config.useMouseWheelForZoom
+            }
+            row()
+            label("Reverse scroll direction")
+            checkBox(""){
+                onChange {
+                    config.reverseScroll=isChecked
+                }
+                isChecked=config.reverseScroll
+            }
+            row()
             label("Mouse acceleration")
             slider(min=1f, max=2f, step=0.1f){
                 onChange {
@@ -162,7 +186,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
                 value=config.mouseAcceleration
             }
             row()
-            label("Space bar scroll amount")
+            label("Amount to scroll on space bar / left click")
             slider(min=0.1f, max=1f, step=0.1f){
                 onChange {
                     config.spaceBarAdvanceAmount=value
