@@ -5,12 +5,6 @@ import com.badlogic.gdx.graphics.Color
 
 class Config {
     val prefs = Gdx.app.getPreferences("uk.co.electronstudio.comicreaderultimate")
-    init {
-        defaultPrefs()
-        loadPrefs()
-    }
-
-
     var doublePage = false
     var continuousScroll = false
     var background = Color.BLACK
@@ -26,6 +20,13 @@ class Config {
     var useMouseWheelForZoom = true
     var useMouseMoveForZoom = false
     var reverseScroll = false
+    init {
+        loadPrefs()
+        println("show debug $showDebug")
+    }
+
+
+
 
     fun defaultPrefs(){
         doublePage = false
