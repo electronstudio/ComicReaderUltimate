@@ -1,3 +1,4 @@
+rmdir desktop\build\ComicReaderUltimate /s /q
 C:\jdk-14\bin\jpackage ^
 --verbose ^
 --input desktop/build/libs ^
@@ -11,7 +12,7 @@ C:\jdk-14\bin\jpackage ^
 --file-associations assoc3.properties ^
 --file-associations assoc4.properties ^
 --file-associations assoc5.properties ^
---add-modules java.desktop,java.base,java.sql.rowset,jdk.unsupported,jdk.unsupported.desktop,java.xml,jdk8internals/sun.reflect,java.logging ^
---package-type msi
+--add-modules java.desktop,java.base,java.sql.rowset,jdk.unsupported,jdk.unsupported.desktop,java.xml,jdk8internals/sun.reflect,java.logging
+rem --package-type msi
 rem --win-menu ^
 rem    --win-shortcut ^

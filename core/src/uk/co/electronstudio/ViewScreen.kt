@@ -503,7 +503,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
 
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
-            Input.Keys.ESCAPE -> {
+            Input.Keys.ESCAPE, Input.Keys.TAB -> {
                 app.setScreen(MenuScreen(app))
             }
             Input.Keys.Q -> {
