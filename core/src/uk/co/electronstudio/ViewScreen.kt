@@ -163,12 +163,15 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         return c.pages.map { it.height() }.sum()
     }
 
+    var loadCompleted = false
+
     override fun render(delta: Float) {
-        //  app.log.info("render")
+        app.log.info("currentPage $currentPage total pages ${comic?.pages?.size}")
         val f = fileToLoad
         if (f != null) {
             fileToLoad = null
             loadComic(f)
+
         }
         Gdx.graphics.isContinuousRendering = false
         if (comic == null) app.setScreen(MenuScreen(app))
@@ -180,6 +183,10 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         processKeyEvents()
         moveRealCamTowardsGoalCam()
         constrainScrolling()
+        if(comic?.loadedTextures == comic?.pages?.size && !loadCompleted){
+            loadCompleted = true
+            scrollToCurrentPageIfNecessary()
+        }
         draw()
     }
 
@@ -365,8 +372,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
             if (goalCam.position.y < realCam.position.y) realCam.position.y = goalCam.position.y
             App.pleaseRender()
         }
-        if (config.continuousScroll) {
-            currentPage = convertScrollAmountToPageNumber(realCam.position.y)
+        if (config.continuousScroll && loadCompleted) {
+           currentPage = convertScrollAmountToPageNumber(realCam.position.y)
 
 
             //  currentPage=(realCam.position.y /
@@ -523,10 +530,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
             Input.Keys.B -> comic?.swapFilter()
             Input.Keys.C -> {
                 config.continuousScroll = !config.continuousScroll
-                if (config.continuousScroll) {
-                    goalCam.position.y = convertPageNumberToScrollAmount(currentPage)
-                    realCam.position.y = goalCam.position.y
-                }
+                scrollToCurrentPageIfNecessary()
             }
             Input.Keys.Z -> zoomToFit()
             Input.Keys.R -> oneOneZoom()
@@ -535,6 +539,14 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         }
         App.pleaseRender()
         return true
+    }
+
+    private fun scrollToCurrentPageIfNecessary() {
+        if (config.continuousScroll) {
+            goalCam.position.y = convertPageNumberToScrollAmount(currentPage)
+            realCam.position.y = goalCam.position.y
+            app.log.info("scrollToCurrentPageIfNecessary $currentPage ${realCam.position.y}")
+        }
     }
 
     fun quit() {
