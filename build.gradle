@@ -55,7 +55,7 @@ project(":desktop") {
 
     dependencies {
         compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         compile "de.tomgrill.gdxdialogs:gdx-dialogs-desktop:1.3.0"

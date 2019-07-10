@@ -166,7 +166,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
     var loadCompleted = false
 
     override fun render(delta: Float) {
-        //app.log.info("currentPage $currentPage total pages ${comic?.pages?.size}")
+        app.log.info("currentPage $currentPage total pages ${comic?.pages?.size}")
         val f = fileToLoad
         if (f != null) {
             fileToLoad = null

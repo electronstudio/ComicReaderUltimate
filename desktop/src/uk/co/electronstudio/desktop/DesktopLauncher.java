@@ -1,14 +1,15 @@
 package uk.co.electronstudio.desktop;
 
 
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import net.spookygames.gdx.nativefilechooser.desktop.DesktopFileChooser;
 
 import uk.co.electronstudio.App;
 
 import java.awt.Desktop;
-
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
 import java.awt.desktop.OpenFilesEvent;
 import java.awt.desktop.OpenFilesHandler;
 import java.io.File;
@@ -34,10 +35,9 @@ public class DesktopLauncher {
         fh.setFormatter(formatter);
 
 
-        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         //config.fullscreen=true;
-        config.setHdpiMode(Lwjgl3ApplicationConfiguration.HdpiMode.Pixels);
-        //config.vSyncEnabled = true;
+        config.vSyncEnabled = true;
         //config.useGL30 = true;
         //config.gles30ContextMajorVersion = 3;
         //config.gles30ContextMinorVersion = 2;
@@ -74,7 +74,7 @@ public class DesktopLauncher {
             });
         }
 
-        new Lwjgl3Application(app, config);
+        new LwjglApplication(app, config);
 
 
     }

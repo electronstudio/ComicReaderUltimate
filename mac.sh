@@ -14,8 +14,7 @@ rm -rf '/Volumes/Home/rich/ComicReaderUltimate/desktop/build/Comic Reader Ultima
 --file-associations assoc3.properties \
 --file-associations assoc4.properties \
 --file-associations assoc5.properties \
---add-modules java.desktop,java.base,java.sql.rowset,jdk.unsupported,jdk.unsupported.desktop,java.xml,jdk8internals/sun.reflect,java.logging \
---java-options '-XstartOnFirstThread'
+--add-modules java.desktop,java.base,java.sql.rowset,jdk.unsupported,jdk.unsupported.desktop,java.xml,jdk8internals/sun.reflect,java.logging
 #--package-type dmg
 #\
 #        --mac-bundle-identifier uk.co.electronstudio.CRU \
