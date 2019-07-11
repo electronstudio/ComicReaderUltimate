@@ -525,7 +525,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
             Input.Keys.D -> config.doublePage = !config.doublePage
             Input.Keys.PAGE_DOWN -> nextPage()
             Input.Keys.PAGE_UP -> prevPage()
-            Input.Keys.O -> requestFile()
+            Input.Keys.L, Input.Keys.O  -> requestFile()
             Input.Keys.SPACE -> advance()
             Input.Keys.B -> comic?.swapFilter()
             Input.Keys.C -> {

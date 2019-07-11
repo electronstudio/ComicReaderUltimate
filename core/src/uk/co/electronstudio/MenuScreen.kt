@@ -102,7 +102,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
                 app.setScreen(app.viewScreen)
             }
 
-            textButton(text = "LOAD FILE [L]").onClick {
+            textButton(text = "OPEN FILE [O]").onClick {
                 app.viewScreen.requestFile()
             }
             row()
@@ -247,7 +247,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
                 when(keycode){
                     Input.Keys.ESCAPE -> app.setScreen(app.viewScreen)
                     Input.Keys.Q -> app.viewScreen.quit()
-                    Input.Keys.L -> app.viewScreen.requestFile()
+                    Input.Keys.L, Input.Keys.O -> app.viewScreen.requestFile()
                 }
                 return super.keyDown(event, keycode)
             }
