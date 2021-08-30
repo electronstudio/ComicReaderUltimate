@@ -6,7 +6,7 @@ import uk.co.electronstudio.App.Companion.pleaseRender
 import java.io.File
 
 abstract class Comic(val filename: String) {
-     abstract val pages: List<Page>
+    abstract val pages: List<Page>
     var filter = Texture.TextureFilter.Linear
 
     val numThreads = Math.max(1,Runtime.getRuntime().availableProcessors()-1)

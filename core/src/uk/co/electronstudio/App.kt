@@ -17,6 +17,7 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
     var pleaseLoad: String? = null
 
     override fun create() {
+        app = this
 
         Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
         Gdx.input.isCursorCatched = false
@@ -47,6 +48,7 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
     }
 
     companion object {
+        lateinit var app: App
         fun pleaseRender() {
             Gdx.graphics.isContinuousRendering = true
             Gdx.graphics.requestRendering()

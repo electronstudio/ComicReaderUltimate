@@ -8,10 +8,10 @@ import net.spookygames.gdx.nativefilechooser.desktop.DesktopFileChooser;
 import uk.co.electronstudio.App;
 
 import java.awt.Desktop;
-import java.awt.desktop.AboutEvent;
-import java.awt.desktop.AboutHandler;
-import java.awt.desktop.OpenFilesEvent;
-import java.awt.desktop.OpenFilesHandler;
+//import java.awt.desktop.AboutEvent;
+//import java.awt.desktop.AboutHandler;
+//import java.awt.desktop.OpenFilesEvent;
+//import java.awt.desktop.OpenFilesHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -53,26 +53,26 @@ public class DesktopLauncher {
 
 
 
-        if(Desktop.getDesktop().isSupported(Desktop.Action.APP_OPEN_FILE)) {
-            Desktop.getDesktop().setOpenFileHandler(new OpenFilesHandler() {
-                @Override
-                public void openFiles(OpenFilesEvent ofe) {
-                    logger.info("open files");
-                    List<File> files = ofe.getFiles();
-                    if (files != null && files.size() > 0) {
-                        String fileToLoad = files.get(0).getAbsolutePath();
-                        logger.info("file handler " + fileToLoad);
-                        //        try {
-                        app.requestLoad(fileToLoad);
-                        //app.viewScreen.loadComic(files.get(0).getAbsolutePath());
-                        //         }catch (Throwable e){
-                        //            logger.log(Level.SEVERE, "error in openfilesevent", e);
-                        //         }
-                        logger.info("file handler done");
-                    }
-                }
-            });
-        }
+//        if(Desktop.getDesktop().isSupported(Desktop.Action.APP_OPEN_FILE)) {
+//            Desktop.getDesktop().setOpenFileHandler(new OpenFilesHandler() {
+//                @Override
+//                public void openFiles(OpenFilesEvent ofe) {
+//                    logger.info("open files");
+//                    List<File> files = ofe.getFiles();
+//                    if (files != null && files.size() > 0) {
+//                        String fileToLoad = files.get(0).getAbsolutePath();
+//                        logger.info("file handler " + fileToLoad);
+//                        //        try {
+//                        app.requestLoad(fileToLoad);
+//                        //app.viewScreen.loadComic(files.get(0).getAbsolutePath());
+//                        //         }catch (Throwable e){
+//                        //            logger.log(Level.SEVERE, "error in openfilesevent", e);
+//                        //         }
+//                        logger.info("file handler done");
+//                    }
+//                }
+//            });
+//        }
 
         new LwjglApplication(app, config);
 
