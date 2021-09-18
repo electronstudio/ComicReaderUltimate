@@ -27,7 +27,7 @@
         "type": "script",
         "dest-filename": "cru.sh",
         "commands": [
-          "java -jar /app/bin/cru.jar \"$@\""
+          "java -Xms1G -Xmx4G -XX:+UseZGC -XX:MaxGCPauseMillis=10 -jar /app/bin/cru.jar \"$@\""
         ]
       },
       {
