@@ -36,7 +36,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
     private var realCam: OrthographicCamera = OrthographicCamera()
     private var goalCam: OrthographicCamera = OrthographicCamera()
     val font = BitmapFont()
-    val textBatch = SpriteBatch()
+    var textBatch = SpriteBatch()
 
 
     var dialogs = GDXDialogsSystem.install()
@@ -65,21 +65,13 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         //        }
 
 
-        realCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        goalCam.setToOrtho(true, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-        goalCam.zoom = 1f
-
-        realCam.update()
-        goalCam.update()
-        Gdx.input.inputProcessor = this
-
-        app.log.info("realcam position ${realCam.position.x} ${realCam.position.y}")
     }
 
 
     override fun resize(width: Int, height: Int) {
         app.log.info("resize $width $height")
+        textBatch = SpriteBatch()
         super.resize(width, height)
 
     }
@@ -88,6 +80,28 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         app.log.info("viewscreen show")
         Gdx.input.inputProcessor = this
         Gdx.input.isCursorCatched = true
+
+
+        //font = BitmapFont()
+
+
+
+
+        val w = Gdx.graphics.displayMode.width.toFloat()
+        val h = Gdx.graphics.displayMode.height.toFloat()
+
+        app.log.info("Setting up camera "+w+" "+h)
+
+        realCam.setToOrtho(true, w, h)
+        goalCam.setToOrtho(true, w, h)
+
+        //goalCam.zoom = 1f
+
+        realCam.update()
+        goalCam.update()
+        Gdx.input.inputProcessor = this
+
+        app.log.info("realcam position ${realCam.position.x} ${realCam.position.y}")
     }
 
 

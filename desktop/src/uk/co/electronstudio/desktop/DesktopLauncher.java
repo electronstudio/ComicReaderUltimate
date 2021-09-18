@@ -1,8 +1,10 @@
 package uk.co.electronstudio.desktop;
 
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+//import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+//import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import net.spookygames.gdx.nativefilechooser.desktop.DesktopFileChooser;
 
 import uk.co.electronstudio.App;
@@ -34,10 +36,13 @@ public class DesktopLauncher {
         SimpleFormatter formatter = new SimpleFormatter();
         fh.setFormatter(formatter);
 
+        //LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        Lwjgl3ApplicationConfiguration config3 = new Lwjgl3ApplicationConfiguration();
+        config3.setHdpiMode(Lwjgl3ApplicationConfiguration.HdpiMode.Pixels);
 
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         //config.fullscreen=true;
-        config.vSyncEnabled = true;
+        //config.vSyncEnabled = true;
+
         //config.useGL30 = true;
         //config.gles30ContextMajorVersion = 3;
         //config.gles30ContextMinorVersion = 2;
@@ -74,8 +79,8 @@ public class DesktopLauncher {
 //            });
 //        }
 
-        new LwjglApplication(app, config);
-
+       // new LwjglApplication(app, config);
+        new Lwjgl3Application(app, config3);
 
     }
 }

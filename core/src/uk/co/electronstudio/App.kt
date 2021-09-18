@@ -19,7 +19,9 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
     override fun create() {
         app = this
 
+        log.info("displaymode "+Gdx.graphics.displayMode)
         Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+
         Gdx.input.isCursorCatched = false
 
         config = Config()
