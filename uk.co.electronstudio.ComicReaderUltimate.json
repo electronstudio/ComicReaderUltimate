@@ -1,0 +1,54 @@
+{
+  "id" : "uk.co.electronstudio.ComicReaderUltimate",
+  "branch" : "1.0",
+  "runtime" : "org.freedesktop.Platform",
+  "runtime-version" : "21.08",
+  "sdk" : "org.freedesktop.Sdk",
+  "sdk-extensions" : [ "org.freedesktop.Sdk.Extension.openjdk" ],
+  "modules" : [ {
+    "name" : "openjdk",
+    "buildsystem" : "simple",
+    "build-commands" : [ "/usr/lib/sdk/openjdk/install.sh" ]
+  }, {
+    "name" : "ComicReaderUltimate",
+    "buildsystem" : "simple",
+    "build-commands" : [
+      "install -D desktop-1.0.jar /app/bin/cru.jar",
+      "install -D cru.sh /app/bin/cru.sh",
+      "install -D icon.png /app/share/icons/hicolor/128x128/apps/uk.co.electronstudio.ComicReaderUltimate.png",
+      "install -D cru.desktop /app/share/applications/uk.co.electronstudio.ComicReaderUltimate.desktop"
+    ],
+    "sources" : [
+      {
+        "type": "file",
+        "path": "desktop/build/libs/desktop-1.0.jar"
+      },
+      {
+        "type": "script",
+        "dest-filename": "cru.sh",
+        "commands": [
+          "java -jar /app/bin/cru.jar \"$@\""
+        ]
+      },
+      {
+        "type": "file",
+        "path": "cru.desktop"
+      },
+      {
+        "type": "file",
+        "path": "icon.png"
+      }
+    ]
+  } ],
+  "finish-args" : [
+    "--env=PATH=/app/jre/bin:/usr/bin",
+    "--socket=x11",
+    "--share=ipc",
+    "--device=dri",
+    "--socket=pulseaudio",
+    "--filesystem=host",
+    "--socket=system-bus",
+    "--device=all"
+  ],
+  "command" : "/app/bin/cru.sh"
+}
