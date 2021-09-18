@@ -18,7 +18,7 @@ abstract class Comic(val filename: String) {
 
     fun loadUnloadedTexturesFromPixmaps() {
         var count=0
-        var time = System.nanoTime()
+//        var time = System.nanoTime()
         pages?.forEach{page->
         //    if(loaded<10000){
                 if(page.texture==null && page.pixmap !=null){
@@ -50,7 +50,7 @@ abstract class Comic(val filename: String) {
         }
         if(count>0){
             val x = ((System.nanoTime() - time) / 1000000f).toInt()
-          //  println("Loaded $count preview textures in $x ms")
+            println("Loaded $count preview textures in $x ms")
         }
 
 //        val buffer =  ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer()
@@ -89,6 +89,10 @@ abstract class Comic(val filename: String) {
         }
         System.gc()
         printFreeMemory()
+    }
+
+    fun allPreviewsAreLoaded(): Boolean {
+        return loadedPreviews == pages.size
     }
 
 

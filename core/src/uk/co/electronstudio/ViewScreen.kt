@@ -191,13 +191,15 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         if (comic == null) app.setScreen(MenuScreen(app))
         comic?.let {
             it.loadPreviewTexturesFromPixmaps()
-            it.loadUnloadedTexturesFromPixmaps()
+            if(it.allPreviewsAreLoaded()) {
+                it.loadUnloadedTexturesFromPixmaps()
+            }
             currentPage = MathUtils.clamp(currentPage, 0, it.pages.lastIndex)
         }
         processKeyEvents()
         moveRealCamTowardsGoalCam()
         constrainScrolling()
-        if(comic?.loadedTextures == comic?.pages?.size && !loadCompleted){
+        if(comic?.allPreviewsAreLoaded() == true && !loadCompleted){
             loadCompleted = true
             scrollToCurrentPageIfNecessary()
         }
