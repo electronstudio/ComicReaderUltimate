@@ -13,18 +13,18 @@
     "name" : "ComicReaderUltimate",
     "buildsystem" : "simple",
     "build-options" :
+    {
+      "build-args": [ "--share=network" ],
+      "env":
       {
-        "build-args": [ "--share=network" ],
-        "env":
-          {
-            "JAVA_HOME": "/usr/lib/sdk/openjdk/jvm/openjdk-16"
-          }
+        "JAVA_HOME": "/usr/lib/sdk/openjdk/jvm/openjdk-16"
       }
+    }
   ,
     "build-commands" : [
       "echo $JAVA_HOME",
       "./gradlew dist",
-      "install -D desktop-1.0.jar /app/bin/cru.jar",
+      "install -D desktop/build/libs/desktop-1.0.jar /app/bin/cru.jar",
       "install -D cru.sh /app/bin/cru.sh",
       "install -D icon.png /app/share/icons/hicolor/128x128/apps/uk.co.electronstudio.ComicReaderUltimate.png",
       "install -D cru.desktop /app/share/applications/uk.co.electronstudio.ComicReaderUltimate.desktop"
@@ -34,10 +34,6 @@
         "type": "git",
         "branch": "master",
         "url": "https://github.com/electronstudio/ComicReaderUltimate.git"
-      },
-      {
-        "type": "file",
-        "path": "desktop/build/libs/desktop-1.0.jar"
       },
       {
         "type": "script",
@@ -59,12 +55,9 @@
   "finish-args" : [
     "--env=PATH=/app/jre/bin:/usr/bin",
     "--socket=x11",
-    "--share=ipc",
     "--device=dri",
     "--socket=pulseaudio",
-    "--filesystem=host",
-    "--socket=system-bus",
-    "--device=all"
+    "--filesystem=host"
   ],
   "command" : "/app/bin/cru.sh"
 }
