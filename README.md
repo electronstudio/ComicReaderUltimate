@@ -15,6 +15,8 @@ CRU is optimized to be as fast and responsive as possible on modern systems with
 This comes at the cost of memory usage - it is assumed you have at least 4GB of RAM and a modern GPU with 2GB of VRAM.
 (CRU makes some effort to optimize for battery power but performance comes first.)  
 
+![screenshot](screenshot.png)
+
 TODO:
 * Android and iOS versions
 * Windows testing, installer and file associations
