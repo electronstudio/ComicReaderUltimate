@@ -92,8 +92,12 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
 
         app.log.info("Setting up camera "+w+" "+h)
 
-        realCam.setToOrtho(true, w, h)
-        goalCam.setToOrtho(true, w, h)
+        if (realCam.viewportWidth != w || realCam.viewportHeight != h) {
+            realCam.setToOrtho(true, w, h)
+        }
+        if (goalCam.viewportWidth != w || goalCam.viewportHeight != h) {
+            goalCam.setToOrtho(true, w, h)
+        }
 
         //goalCam.zoom = 1f
 
@@ -178,6 +182,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
     }
 
     var loadCompleted = false
+    var initialZoomToFitDone = false
 
     override fun render(delta: Float) {
         app.log.info("currentPage $currentPage total pages ${comic?.pages?.size}")
@@ -202,6 +207,10 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         if(comic?.allPreviewsAreLoaded() == true && !loadCompleted){
             loadCompleted = true
             scrollToCurrentPageIfNecessary()
+        }
+        if(comic?.pages?.get(currentPage)?.previewTexture != null && !initialZoomToFitDone ){
+            zoomToFit()
+            initialZoomToFitDone = true
         }
         draw()
     }

@@ -6,6 +6,12 @@
       <module name="ComicReaderUltimate.core.test" target="12" />
       <module name="ComicReaderUltimate.desktop.main" target="12" />
       <module name="ComicReaderUltimate.desktop.test" target="12" />
+      <module name="IdeaProjects.ComicReaderUltimate.core" target="11" />
+      <module name="IdeaProjects.ComicReaderUltimate.core.main" target="11" />
+      <module name="IdeaProjects.ComicReaderUltimate.core.test" target="11" />
+      <module name="IdeaProjects.ComicReaderUltimate.desktop" target="11" />
+      <module name="IdeaProjects.ComicReaderUltimate.desktop.main" target="11" />
+      <module name="IdeaProjects.ComicReaderUltimate.desktop.test" target="11" />
       <module name="richard.ComicReaderUltimate.core" target="15" />
       <module name="richard.ComicReaderUltimate.core.main" target="15" />
       <module name="richard.ComicReaderUltimate.core.test" target="15" />

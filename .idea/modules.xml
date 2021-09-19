@@ -9,6 +9,13 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/ComicReaderUltimate.desktop.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/ComicReaderUltimate.desktop.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/ComicReaderUltimate.desktop.main.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/ComicReaderUltimate.desktop.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/ComicReaderUltimate.desktop.test.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/ComicReaderUltimate.desktop.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IdeaProjects.ComicReaderUltimate.iml" filepath="$PROJECT_DIR$/.idea/modules/IdeaProjects.ComicReaderUltimate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/IdeaProjects.ComicReaderUltimate.core.iml" filepath="$PROJECT_DIR$/.idea/modules/core/IdeaProjects.ComicReaderUltimate.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/IdeaProjects.ComicReaderUltimate.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/IdeaProjects.ComicReaderUltimate.core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/IdeaProjects.ComicReaderUltimate.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/IdeaProjects.ComicReaderUltimate.core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/IdeaProjects.ComicReaderUltimate.desktop.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/IdeaProjects.ComicReaderUltimate.desktop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/IdeaProjects.ComicReaderUltimate.desktop.main.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/IdeaProjects.ComicReaderUltimate.desktop.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/IdeaProjects.ComicReaderUltimate.desktop.test.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/IdeaProjects.ComicReaderUltimate.desktop.test.iml" />
     </modules>
   </component>
 </project>
