@@ -22,12 +22,13 @@
     }
   ,
     "build-commands" : [
-      "echo $JAVA_HOME",
       "./gradlew dist",
       "install -D desktop/build/libs/desktop-1.0.jar /app/bin/cru.jar",
       "install -D cru.sh /app/bin/cru.sh",
-      "install -D icon.png /app/share/icons/hicolor/128x128/apps/uk.co.electronstudio.ComicReaderUltimate.png",
-      "install -D cru.desktop /app/share/applications/uk.co.electronstudio.ComicReaderUltimate.desktop"
+      "install -D icon128.png /app/share/icons/hicolor/128x128/apps/uk.co.electronstudio.ComicReaderUltimate.png",
+      "install -D icon64.png /app/share/icons/hicolor/64x64/apps/uk.co.electronstudio.ComicReaderUltimate.png",
+      "install -D uk.co.electronstudio.ComicReaderUltimate.desktop /app/share/applications/uk.co.electronstudio.ComicReaderUltimate.desktop",
+      "install -D uk.co.electronstudio.ComicReaderUltimate.appdata.xml /app/share/appdata/uk.co.electronstudio.ComicReaderUltimate.appdata.xml"
     ],
     "sources" : [
       {
@@ -41,19 +42,11 @@
         "commands": [
           "java -Xms1G -Xmx4G -XX:+UseZGC -XX:MaxGCPauseMillis=10 -jar /app/bin/cru.jar \"$@\""
         ]
-      },
-      {
-        "type": "file",
-        "path": "cru.desktop"
-      },
-      {
-        "type": "file",
-        "path": "icon.png"
       }
     ]
   } ],
   "finish-args" : [
-    "--env=PATH=/app/jre/bin:/usr/bin",
+    "--env=PATH=/app/jre/bin:/usr/bin:/app/bin",
     "--socket=x11",
     "--device=dri",
     "--socket=pulseaudio",
