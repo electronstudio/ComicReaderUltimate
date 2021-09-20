@@ -9,10 +9,6 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.utils.Array
 import ktx.scene2d.*
 import ktx.actors.*
@@ -21,17 +17,18 @@ import net.dermetfan.gdx.scenes.scene2d.ui.ListFileChooser
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import com.badlogic.gdx.scenes.scene2d.InputListener
-
+import com.badlogic.gdx.scenes.scene2d.ui.*
 
 
 class MenuScreen(val app: App): ScreenAdapter() {
     val config = app.config
     private var stage: Stage? = null
     private var table: Table? = null
+    private val window: Window
 
     init {
         app.log.info("menuscreen init")
-        stage = Stage()
+
 
 
         val s = Skin(Gdx.files.internal("skin/uiskin.json"))
@@ -80,7 +77,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
 
 
 
-        val window = window(title = "Settings") {
+        window = window(title = "Settings") {
 //            button { cell ->
 //                // Changing button properties - button is "this":
 //                color = Color.CORAL
@@ -239,8 +236,24 @@ class MenuScreen(val app: App): ScreenAdapter() {
             pack()
         }
 
+        chooser.setFillParent(true)
+        window.setFillParent(true)
       //  window2.add(chooser)
       //  window2.pack()
+
+
+
+
+
+        //table!!.setDebug(true) // This is optional, but enables debug lines for tables.
+
+        // Add widgets to the table here.
+    }
+
+    override fun resize(width: Int, height: Int) {
+        app.log.info("menuscreen resize $width $height")
+
+        stage = Stage()
 
         stage!!.addListener(object : InputListener() {
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
@@ -252,21 +265,14 @@ class MenuScreen(val app: App): ScreenAdapter() {
                 return super.keyDown(event, keycode)
             }
         })
-        chooser.setFillParent(true)
-       window.setFillParent(true)
+
         table!!.setFillParent(true)
         stage!!.addActor(window)
 
+        Gdx.input.isCursorCatched = false
+        Gdx.input.inputProcessor = stage
 
-
-        //table!!.setDebug(true) // This is optional, but enables debug lines for tables.
-
-        // Add widgets to the table here.
-    }
-
-    override fun resize(width: Int, height: Int) {
-        app.log.info("menuscreen resize")
-        stage?.getViewport()?.update(width, height, true)
+        //stage?.getViewport()?.update(width, height, true)
     }
 
     override fun render(delta: Float) {
@@ -278,8 +284,10 @@ class MenuScreen(val app: App): ScreenAdapter() {
 
     override fun show() {
         app.log.info("menuscreen show")
-        Gdx.input.isCursorCatched = false
-        Gdx.input.inputProcessor = stage
+
+
+
+
     }
 
     override fun dispose() {

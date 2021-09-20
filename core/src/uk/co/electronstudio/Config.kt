@@ -16,7 +16,7 @@ class Config {
     var quitAtEnd = true
     var spaceBarAdvanceAmount = 0.5f
     var mouseAcceleration = 1.1f // 1 to 1.99
-    var showDebug = true
+    var showDebug = false
     var useMouseWheelForZoom = true
     var useMouseMoveForZoom = false
     var reverseScroll = false
@@ -33,7 +33,7 @@ class Config {
         continuousScroll = false
         mouseSmoothing = false
         quitAtEnd = true
-        showDebug = true
+        showDebug = false
         useMouseWheelForZoom = true
         useMouseMoveForZoom = false
         reverseScroll = false
