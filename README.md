@@ -17,7 +17,33 @@ This comes at the cost of memory usage - it is assumed you have at least 4GB of 
 
 ![screenshot](screenshot.png)
 
-TODO:
+## Keys
+
+| Function | Keys |
+| ---------| --- |
+| Quit | Q |
+| Open file | O, L |
+| Menu | Escape, Tab |
+| |  |
+| Scroll | Cursor keys |
+| First page | Home |
+| Last page | End |
+| Next page | Page Down |
+| Prev page | Page Up |
+| Next screen | Space |
+| | |
+| Zoom in | + |
+| Zoom out | - |
+| Zoom to fit | Z |
+| Zoom default | R |
+| | |
+| Double pages | D |
+| Bilinear filter | B |
+| Continuous scroll | C |
+
+     
+
+## TODO
 * Android and iOS versions
 * Windows testing, installer and file associations
 * Optimizations for integrated GPU
@@ -26,6 +52,6 @@ Building:
 
     ./gradlew dist
 
-To build and install a flatpak from latest Git source:
+To build and install a flatpak from the latest Git source:
 
-    flatpak-builder --force-clean --user --install flat-build uk.co.electronstudio.ComicReaderUltimate.json
+    flatpak-builder --force-clean --user --install flat-build uk.co.electronstudio.ComicReaderUltimate-github.json
