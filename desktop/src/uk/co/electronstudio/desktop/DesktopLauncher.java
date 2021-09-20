@@ -32,7 +32,7 @@ public class DesktopLauncher {
         String logfile = System.getProperty("user.home") + "/.cru.log";
         System.out.println(logfile);
         FileHandler fh = new FileHandler(logfile);
-        logger.addHandler(fh);
+        //logger.addHandler(fh);
         SimpleFormatter formatter = new SimpleFormatter();
         fh.setFormatter(formatter);
 
