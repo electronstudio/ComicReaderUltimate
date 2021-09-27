@@ -3,6 +3,7 @@ package uk.co.electronstudio
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import uk.co.electronstudio.App.Companion.app
 
 /**
  * Contains a pixmap (the raw image data) and optionally a texture built from the pixmap and a smaller preview texture
@@ -66,7 +67,31 @@ class Page(internal var pixmap: Pixmap?) {
         val p=pixmap
         if(p==null) return
         texture?.texture?.dispose()
-        val t = Texture(p, Pixmap.Format.RGB888, false)
+
+        var p2 = p
+        if(app.config.lowRes && p.width>1024) {
+            val smallMap =
+                Pixmap(1024, (p.height * (1024f / p.width.toFloat())).toInt(), Pixmap.Format.RGB888)
+            smallMap.setFilter(Pixmap.Filter.BiLinear)
+            p.setFilter(Pixmap.Filter.BiLinear)
+            smallMap.drawPixmap(
+                pixmap,
+                0,
+                0,
+                p.width,
+                p.height,
+                0,
+                0,
+                smallMap.width,
+                smallMap.height
+            )
+            p2 = smallMap
+
+        }
+
+        val    t = Texture(p2, Pixmap.Format.RGB888, false)
+
+
         texture = TextureRegion(t)
         texture?.let {
            it.flip(false, true)

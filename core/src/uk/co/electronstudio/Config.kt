@@ -20,6 +20,8 @@ class Config {
     var useMouseWheelForZoom = true
     var useMouseMoveForZoom = false
     var reverseScroll = false
+    var lowRes = false
+    var previews = true
     init {
         loadPrefs()
         println("show debug $showDebug")
@@ -49,8 +51,8 @@ class Config {
 
         background = Color.BLACK
 
-
-
+        lowRes = false
+        previews = true
     }
 
     fun loadPrefs(){
@@ -69,6 +71,8 @@ class Config {
         useMouseMoveForZoom = prefs.getBoolean("useMouseMoveForZoom", useMouseMoveForZoom)
         useMouseWheelForZoom = prefs.getBoolean("useMouseWheelForZoom", useMouseWheelForZoom)
         reverseScroll = prefs.getBoolean("reverseScroll", reverseScroll)
+        lowRes = prefs.getBoolean("lowRes", lowRes)
+        previews = prefs.getBoolean("previews", previews)
     }
 
     fun savePrefs(){
@@ -86,6 +90,8 @@ class Config {
         prefs.putBoolean("useMouseMoveForZoom", useMouseMoveForZoom)
         prefs.putBoolean("useMouseWheelForZoom", useMouseWheelForZoom)
         prefs.putBoolean("reverseScroll", reverseScroll)
+        prefs.putBoolean("lowRes", lowRes)
+        prefs.putBoolean("previews", previews)
         prefs.flush()
     }
 

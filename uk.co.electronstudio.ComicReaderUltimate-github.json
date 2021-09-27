@@ -1,10 +1,9 @@
 {
   "id" : "uk.co.electronstudio.ComicReaderUltimate",
-  "branch" : "1.0",
   "runtime" : "org.freedesktop.Platform",
   "runtime-version" : "21.08",
   "sdk" : "org.freedesktop.Sdk",
-  "sdk-extensions" : [ "org.freedesktop.Sdk.Extension.openjdk" ],
+  "sdk-extensions" : [ "org.freedesktop.Sdk.Extension.openjdk17" ],
   "modules" : [ {
     "name" : "openjdk",
     "buildsystem" : "simple",
@@ -17,7 +16,7 @@
       "build-args": [ "--share=network" ],
       "env":
       {
-        "JAVA_HOME": "/usr/lib/sdk/openjdk/jvm/openjdk-16"
+        "JAVA_HOME": "/usr/lib/sdk/openjdk/jvm/openjdk-17"
       }
     }
   ,

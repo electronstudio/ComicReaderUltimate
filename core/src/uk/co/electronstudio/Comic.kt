@@ -1,9 +1,12 @@
 package uk.co.electronstudio
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import org.apache.tika.Tika
 import uk.co.electronstudio.App.Companion.pleaseRender
 import java.io.File
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 abstract class Comic(val filename: String) {
     abstract val pages: List<Page>
@@ -37,25 +40,29 @@ abstract class Comic(val filename: String) {
     }
 
     fun loadPreviewTexturesFromPixmaps() {
+        println("loadPreviewTexturesFromPixmaps")
         var count=0
         var time = System.nanoTime()
-        pages?.forEach{page->
+        pages.forEach{page->
             if(page.previewTexture ==null && page.pixmap !=null){
                 page.loadPreviewTexture()
                 loadedPreviews++
                 count++
                 pleaseRender()
             }
-
         }
         if(count>0){
             val x = ((System.nanoTime() - time) / 1000000f).toInt()
             println("Loaded $count preview textures in $x ms")
         }
 
-//        val buffer =  ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer()
-//        Gdx.gl.glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX.toInt(), buffer)
-//        println("VIDEO RAM: ${buffer[0]} ${buffer[1]} ${buffer[2]} ${buffer[3]}")
+
+
+        //val buffer =  ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer()
+
+        //Gdx.gl.glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX.toInt(), buffer)
+        //Gdx.gl.glGetIntegerv(0x9049, buffer)
+        //println("VIDEO RAM: ${buffer[0]} ${buffer[1]} ${buffer[2]} ${buffer[3]}")
 //        println("VIDEO RAM: ${buffer[4]} ${buffer[5]} ${buffer[6]} ${buffer[7]}")
 //        println("VIDEO RAM: ${buffer[8]} ${buffer[9]} ${buffer[10]} ${buffer[11]}")
 //        println("VIDEO RAM: ${buffer[12]} ${buffer[13]} ${buffer[14]} ${buffer[15]}")

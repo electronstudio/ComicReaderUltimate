@@ -124,6 +124,22 @@ class MenuScreen(val app: App): ScreenAdapter() {
                 isChecked=config.quitAtEnd
             }
             row()
+            label("Low VRAM mode")
+            checkBox(""){
+                onChange {
+                    config.lowRes=isChecked
+                }
+                isChecked=config.lowRes
+            }
+            row()
+            label("Preview pages")
+            checkBox(""){
+                onChange {
+                    config.previews=isChecked
+                }
+                isChecked=config.previews
+            }
+            row()
             label("Show debug into")
             checkBox(""){
                 onChange {

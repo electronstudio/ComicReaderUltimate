@@ -23,17 +23,27 @@ class ZipComicThreaded(filename: String):Comic(filename) {
         if (pages.isEmpty()) throw Exception("no pages found in comic")
     }
 
+    val errorPixmap =  Pixmap(Gdx.files.internal("badlogic.jpg"))
+
     override fun loadPixmaps() {
         App.app.log.info("zip open, $numThreads threads")
         zippedImages.forEachIndexed() {i, it ->
             App.app.log.info("zipentry: $it")
                 es.submit {
+                    println("loading pixmap for page $i")
                     zipFile.getInputStream(it).buffered().use {
-                        //println("readbytes")
-                        val bytes = it.readBytes(10000000)
-                        //println("makepixmap")
-                        val pixmap = Pixmap(bytes, 0, bytes.size)
-                        pages[i]=(Page(pixmap))
+                        val bytes = it.readBytes()
+                        try{
+                            val pixmap = Pixmap(bytes, 0, bytes.size)
+                            pages[i]=(Page(pixmap))
+                        }catch (e: Exception){
+                            println("EXCEPTION "+e.message)
+                            e.printStackTrace()
+
+
+                            pages[i]=(Page(errorPixmap))
+                        }
+
                         Gdx.graphics.isContinuousRendering = true
                         Gdx.graphics.requestRendering()
                         //println("${bytes.size} $it")
@@ -43,7 +53,7 @@ class ZipComicThreaded(filename: String):Comic(filename) {
         }
             App.app.log.info("waiting for termination")
             es.shutdown()
-            es.awaitTermination(60, TimeUnit.SECONDS)
+            es.awaitTermination(999999, TimeUnit.SECONDS)
             zipFile.close()
 
         }
