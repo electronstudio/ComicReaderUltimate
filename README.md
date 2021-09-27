@@ -19,27 +19,27 @@ This comes at the cost of memory usage - it is assumed you have at least 4GB of 
 
 ## Keys
 
-| Function | Keys |
-| ---------| --- |
-| Quit | Q |
-| Open file | O, L |
-| Menu | Escape, Tab |
-| |  |
-| Scroll | Cursor keys |
-| First page | Home |
-| Last page | End |
-| Next page | Page Down |
-| Prev page | Page Up |
-| Next screen | Space |
-| | |
-| Zoom in | + |
-| Zoom out | - |
-| Zoom to fit | Z |
-| Zoom default | R |
-| | |
-| Double pages | D |
-| Bilinear filter | B |
-| Continuous scroll | C |
+| Function          | Keys        |
+| ----------------  | ----        |
+| Quit              | Q           |
+| Open file         | O, L        |
+| Menu              | Escape, Tab |
+|                   |             |
+| Scroll            | Cursor keys |
+| First page        | Home        |
+| Last page         | End         |
+| Next page         | Page Down   |
+| Prev page         | Page Up     |
+| Next screen       | Space       |
+|                   |             |
+| Zoom in           | +           |
+| Zoom out          | -           |
+| Zoom to fit       | Z           |
+| Zoom default      | R           |
+|                   |             |
+| Double pages      | D           |
+| Bilinear filter   | B           |
+| Continuous scroll | C           |
 
      
 

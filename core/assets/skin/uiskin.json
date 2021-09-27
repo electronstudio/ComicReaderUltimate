@@ -82,20 +82,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
 	default: {label: {font: default-font, fontColor: default}, background: tooltip, wrapWidth: 150
 		 }
-},
+}
 
-	"net.dermetfan.gdx.scenes.scene2d.ui.ListFileChooser$Style": {
-		"default": {
-			"pathFieldStyle": "default",
-			"contentsStyle": "default",
-			"chooseButtonStyle": "default",
-			"openButtonStyle": "default",
-			"cancelButtonStyle": "default",
-			"backButtonStyle": "default",
-			"parentButtonStyle": "default",
-			"space": 10,
-			"contentsPaneStyle": "default"
-		}
-	}
+
 
 }

@@ -39,6 +39,7 @@ public class DesktopLauncher {
         //LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         Lwjgl3ApplicationConfiguration config3 = new Lwjgl3ApplicationConfiguration();
         config3.setHdpiMode(Lwjgl3ApplicationConfiguration.HdpiMode.Pixels);
+        //config3.setFullscreenMode();
 
         //config.fullscreen=true;
         //config.vSyncEnabled = true;

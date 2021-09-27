@@ -2,6 +2,7 @@ package uk.co.electronstudio
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.Stage
 import net.spookygames.gdx.nativefilechooser.NativeFileChooser
 import java.io.File
 import java.util.logging.Logger
@@ -40,7 +41,13 @@ class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
         }
         log.info("creating viewscreen, pleaseLoad is $pleaseLoad")
         viewScreen = ViewScreen(this, fileToOpen, startPage)
-        //menuScreen = MenuScreen(this)
+        /** This is the most important line in the whole program, yet it does nothing.
+         * Without it, the viewscreen renders everything too small on Windows.
+         * With it, rendering works.
+         * No-one knows why.
+         * It's not necessary for Linux.
+         */
+        Stage()
         setScreen(viewScreen)
     }
 

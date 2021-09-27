@@ -14,8 +14,8 @@ import com.badlogic.gdx.math.MathUtils
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import kotlin.concurrent.thread
-import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
-import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
+//import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
+//import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
 import java.util.logging.Level
 
 
@@ -39,7 +39,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
     var textBatch = SpriteBatch()
 
 
-    var dialogs = GDXDialogsSystem.install()
+    //var dialogs = GDXDialogsSystem.install()
 
     private var comic: Comic? = null
     private var totalPageHeights = 0f
@@ -83,6 +83,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
 
 
         //font = BitmapFont()
+
+        batch = SpriteBatch()
 
 
 
@@ -159,21 +161,23 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         } catch (e: Throwable) {
             app.log.log(Level.SEVERE, "error loading comic", e)
             e.printStackTrace()
-            val bDialog = dialogs.newDialog(GDXButtonDialog::class.java)
-            bDialog.setTitle(e.message)
-            bDialog.setMessage(e.stackTrace.joinToString(separator = "\n") { it.toString() })
-
-            bDialog.setClickListener {
-                bDialog.dismiss()
-                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
-                Gdx.input.isCursorCatched = true
-            }
-
-            bDialog.addButton("OK")
-            Gdx.input.isCursorCatched = false
-            Gdx.graphics.setWindowedMode(10, 10)
-
-            bDialog.build().show()
+            val errorScreen = ErrorScreen(app, e.message, e.stackTrace.joinToString(separator = "\n") { it.toString() } )
+            app.setScreen(errorScreen)
+//            val bDialog = dialogs.newDialog(GDXButtonDialog::class.java)
+//            bDialog.setTitle(e.message)
+//            bDialog.setMessage(e.stackTrace.joinToString(separator = "\n") { it.toString() })
+//
+//            bDialog.setClickListener {
+//                bDialog.dismiss()
+//                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+//                Gdx.input.isCursorCatched = true
+//            }
+//
+//            bDialog.addButton("OK")
+//            Gdx.input.isCursorCatched = false
+//            Gdx.graphics.setWindowedMode(10, 10)
+//
+//            bDialog.build().show()
         }
     }
 
@@ -561,6 +565,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
             Input.Keys.R -> oneOneZoom()
             Input.Keys.HOME -> firstPage()
             Input.Keys.END -> lastPage()
+            Input.Keys.S -> { app.setScreen(ErrorScreen(app, "foo","Boo"))}
         }
         App.pleaseRender()
         return true
@@ -578,6 +583,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         config.prefs.putInteger("currentPage", currentPage)
         config.savePrefs()
         Gdx.app.exit()
+        System.exit(0)
     }
 
     var oldZoom = 1f
@@ -675,5 +681,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         return true
     }
 
+    override fun hide() {
+        Gdx.input.inputProcessor = null
+    }
 
 }

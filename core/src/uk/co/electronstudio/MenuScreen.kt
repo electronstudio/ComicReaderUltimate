@@ -3,19 +3,12 @@ package uk.co.electronstudio
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.ScreenAdapter
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.Array
 import ktx.scene2d.*
 import ktx.actors.*
-import net.dermetfan.gdx.scenes.scene2d.ui.FileChooser
-import net.dermetfan.gdx.scenes.scene2d.ui.ListFileChooser
-import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
-import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.*
 
@@ -33,23 +26,11 @@ class MenuScreen(val app: App): ScreenAdapter() {
 
         val s = Skin(Gdx.files.internal("skin/uiskin.json"))
 
-        val nameLabel = Label("Name:", s)
+
 
         Scene2DSkin.defaultSkin = s
 
-        val chooser = ListFileChooser(s,"default",  object: FileChooser.Listener{
-            override fun choose(file: FileHandle?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
 
-            override fun choose(files: Array<FileHandle>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun cancel() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
 
         table = table {
             button { cell ->
@@ -231,12 +212,12 @@ class MenuScreen(val app: App): ScreenAdapter() {
 
 
 
-        val window2 = window(title = "Settings") {
-            chooser
-            pack()
-        }
-
-        chooser.setFillParent(true)
+//        val window2 = window(title = "Settings") {
+//            chooser
+//            pack()
+//        }
+//
+//        chooser.setFillParent(true)
         window.setFillParent(true)
       //  window2.add(chooser)
       //  window2.pack()
@@ -258,7 +239,7 @@ class MenuScreen(val app: App): ScreenAdapter() {
         stage!!.addListener(object : InputListener() {
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                 when(keycode){
-                    Input.Keys.ESCAPE -> app.setScreen(app.viewScreen)
+                    Input.Keys.ESCAPE, Input.Keys.TAB -> app.setScreen(app.viewScreen)
                     Input.Keys.Q -> app.viewScreen.quit()
                     Input.Keys.L, Input.Keys.O -> app.viewScreen.requestFile()
                 }
@@ -284,10 +265,6 @@ class MenuScreen(val app: App): ScreenAdapter() {
 
     override fun show() {
         app.log.info("menuscreen show")
-
-
-
-
     }
 
     override fun dispose() {
