@@ -37,7 +37,36 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
     private var goalCam: OrthographicCamera = OrthographicCamera()
     val font = BitmapFont()
     var textBatch = SpriteBatch()
+    val fixedFont = BitmapFont()
+    var lastError = "No file loaded"
+    val help =
+        """
+| Function          | Keys        |
+| ----------------  | ----        |
+| Quit              | Q           |
+| Open file         | O, L        |
+| Menu              | Escape, Tab |
+|                   |             |
+| Scroll            | Cursor keys |
+| First page        | Home        |
+| Last page         | End         |
+| Next page         | Page Down   |
+| Prev page         | Page Up     |
+| Next screen       | Space       |
+|                   |             |
+| Zoom in           | +           |
+| Zoom out          | -           |
+| Zoom to fit       | Z           |
+| Zoom default      | R           |
+|                   |             |
+| Double pages      | D           |
+| Bilinear filter   | B           |
+| Continuous scroll | C           |
+            """.trimIndent()
 
+    init {
+        fixedFont.setFixedWidthGlyphs("ABCDEFGHIJKLMNOPQRSTUVWXYZ-abcdefghijklmnopqrstuvwxyz ,+-")
+    }
 
     //var dialogs = GDXDialogsSystem.install()
 
@@ -54,19 +83,6 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
     val config = app.config
 
 
-    init {
-        //if passed comic, attempt to load it
-        //else attempt to load previous comic
-        //        if (fileToLoad != null) {
-        //            loadComic(fileToLoad)
-        //        }
-        //        else {
-        //            requestFile()
-        //        }
-
-
-
-    }
 
 
     override fun resize(width: Int, height: Int) {
@@ -115,6 +131,8 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         app.setScreen(this)
         val conf = NativeFileChooserConfiguration()
 
+        comic = null
+
         //  conf.directory = Gdx.files.absolute(System.getProperty("user.home"))
 
         conf.title = "Choose cbr/cbz/jpg"
@@ -161,8 +179,9 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
         } catch (e: Throwable) {
             app.log.log(Level.SEVERE, "error loading comic", e)
             e.printStackTrace()
-            val errorScreen = ErrorScreen(app, e.message, e.stackTrace.joinToString(separator = "\n") { it.toString() } )
-            app.setScreen(errorScreen)
+            lastError = e.message +"\n\n"+e.stackTrace.joinToString(separator = "\n") { it.toString() }
+            //val errorScreen = ErrorScreen(app, e.message, e.stackTrace.joinToString(separator = "\n") { it.toString() } )
+            //app.setScreen(errorScreen)
 //            val bDialog = dialogs.newDialog(GDXButtonDialog::class.java)
 //            bDialog.setTitle(e.message)
 //            bDialog.setMessage(e.stackTrace.joinToString(separator = "\n") { it.toString() })
@@ -197,7 +216,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
 
         }
         Gdx.graphics.isContinuousRendering = false
-        if (comic == null) app.setScreen(MenuScreen(app))
+        //if (comic == null) app.setScreen(MenuScreen(app))
         comic?.let {
             it.loadPreviewTexturesFromPixmaps()
             if(it.allPreviewsAreLoaded()) {
@@ -305,6 +324,11 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
                 0f,
                 11f);
 
+        }
+        if (comic==null){
+            font.setColor(Color.WHITE)
+            font.draw(textBatch, lastError, 10f,Gdx.graphics.displayMode.height.toFloat()/2f)
+            fixedFont.draw(textBatch, help, Gdx.graphics.displayMode.width/2f, Gdx.graphics.displayMode.height.toFloat()-100f);
         }
         textBatch.end()
 
@@ -565,7 +589,6 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
             Input.Keys.R -> oneOneZoom()
             Input.Keys.HOME -> firstPage()
             Input.Keys.END -> lastPage()
-            Input.Keys.S -> { app.setScreen(ErrorScreen(app, "foo","Boo"))}
         }
         App.pleaseRender()
         return true

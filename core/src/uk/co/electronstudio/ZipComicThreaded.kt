@@ -20,6 +20,7 @@ class ZipComicThreaded(filename: String):Comic(filename) {
             zippedImages.forEach {
                 pages.add(Page(null))
             }
+        if (pages.isEmpty()) throw Exception("no pages found in comic")
     }
 
     override fun loadPixmaps() {

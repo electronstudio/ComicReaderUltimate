@@ -48,9 +48,11 @@
   "finish-args" : [
     "--env=PATH=/app/jre/bin:/usr/bin:/app/bin",
     "--socket=x11",
+    "--share=ipc",
     "--device=dri",
     "--socket=pulseaudio",
-    "--filesystem=host"
+    "--filesystem=home/.prefs/uk.co.electronstudio.comicreaderultimate",
+    "--filesystem=host:ro"
   ],
   "command" : "/app/bin/cru.sh"
 }
