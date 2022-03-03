@@ -1,5 +1,7 @@
 package uk.co.electronstudio
 
+//import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
+//import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
@@ -15,10 +17,8 @@ import net.spookygames.gdx.nativefilechooser.NativeFileChooserCallback
 import net.spookygames.gdx.nativefilechooser.NativeFileChooserConfiguration
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import kotlin.concurrent.thread
-//import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
-//import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog
 import java.util.logging.Level
+import kotlin.concurrent.thread
 
 
 /**
@@ -359,7 +359,7 @@ class ViewScreen(val app: App, var fileToLoad: String?, var currentPage: Int = 0
             font.setColor(Color.RED)
             font.draw(
                 textBatch,
-                "page: ${currentPage + 1} total: ${comic?.pages?.size} loaded: ${comic?.loadedTextures} previews: ${comic?.loadedPreviews} camera: ${realCam.position.x.toInt()}  ${realCam.position.y.toInt()} screen: ${Gdx.graphics.displayMode.width} ${Gdx.graphics.displayMode.height} zoom: ${realCam.zoom.toInt()} VRAM: ${vram} / $vram2 RAM: $ram",
+                "page: ${currentPage + 1} total: ${comic?.pages?.size} loaded: ${comic?.loadedTextures} previews: ${comic?.loadedPreviews} camera: ${realCam.position.x.toInt()}  ${realCam.position.y.toInt()} screen: ${Gdx.graphics.displayMode.width} ${Gdx.graphics.displayMode.height} zoom: ${realCam.zoom.toInt()} VRAM: ${vram} / $vram2 RAM: $ram version $VERSION",
                 0f,
                 11f
             );

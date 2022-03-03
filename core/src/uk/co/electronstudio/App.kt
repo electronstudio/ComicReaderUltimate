@@ -7,6 +7,7 @@ import net.spookygames.gdx.nativefilechooser.NativeFileChooser
 import java.io.File
 import java.util.logging.Logger
 
+val VERSION = "1.0.4"
 
 class App(val fileChooser: NativeFileChooser, val log: Logger) : Game() {
 

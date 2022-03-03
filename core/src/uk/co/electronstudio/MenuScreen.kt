@@ -219,7 +219,9 @@ class MenuScreen(val app: App): ScreenAdapter() {
                 }
                 value=config.mouseSens
             }
-
+            row()
+            label("Version")
+            label(VERSION)
             // Packing the root window:
             pack()
         }
