@@ -1,6 +1,8 @@
 ComicReaderUltimate (CRU) is the modern successor to ComicReaderPro, one of the earliest programs for reading comics in CBR, CBZ or JPEG format on Windows, Mac and Linux.
 
-[Install from Flathub](https://flathub.org/apps/details/uk.co.electronstudio.ComicReaderUltimate)
+[Install from Flathub for Linux](https://flathub.org/apps/details/uk.co.electronstudio.ComicReaderUltimate)
+
+[Install from JDeploy for Windows, Mac, Linux](http://www.jdeploy.com/~comic-reader-ultimate)
 
 * Multi-threaded for fast loading
 * GPU accelerated rendering
@@ -47,7 +49,7 @@ This comes at the cost of memory usage - it is assumed you have at least 4GB of 
 
 ## TODO
 * Android and iOS versions
-* Windows testing, installer and file associations
+* Windows testing
 * Optimizations for integrated GPU
 
 Building:

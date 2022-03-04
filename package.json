@@ -1,0 +1,44 @@
+{
+    "bin": {"cru": "jdeploy-bundle/jdeploy.js"},
+    "author": "paradroid",
+    "description": "An opinionated CBZ viewer",
+    "main": "index.js",
+    "preferGlobal": true,
+    "repository": "",
+    "version": "1.0.5",
+    "jdeploy": {
+        "jdk": false,
+        "args": [
+            "-Xms1G",
+            "-Xmx4G",
+            "-XX:+UseZGC",
+            "-XX:MaxGCPauseMillis=10"
+        ],
+        "javaVersion": "17",
+        "documentTypes": [
+            {
+                "extension": "cbz",
+                "mimetype": "application/vnd.comicbook+zip"
+            },
+            {
+                "extension": "cbr",
+                "mimetype": "application/vnd.comicbook-rar"
+            },
+            {
+                "extension": "jpg",
+                "mimetype": "image/jpeg"
+            }
+        ],
+        "jar": "desktop/build/libs/desktop-1.0.jar",
+        "javafx": false,
+        "title": "Comic Reader Ultimate"
+    },
+    "dependencies": {
+        "njre": "^0.2.0",
+        "shelljs": "^0.8.4"
+    },
+    "license": "GPLv3",
+    "name": "comic-reader-ultimate",
+    "files": ["jdeploy-bundle"],
+    "scripts": {"test": "echo \"Error: no test specified\" && exit 1"}
+}
